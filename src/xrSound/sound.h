@@ -5,6 +5,9 @@
 #include "xrCore/xr_resource.h"
 #include "xrCore/_vector3d.h"
 #include "xrCommon/xr_vector.h" // DEFINE_VECTOR
+#if defined(LINUX)
+#include "xrCore/xrDebug_macros.h"
+#endif
 
 constexpr pcstr SNDENV_FILENAME = "sEnvironment.xr";
 #define OGG_COMMENT_VERSION 0x0003
@@ -24,7 +27,7 @@ struct xr_token;
 class IReader;
 template <class T>
 struct _vector2;
-using Fvector2 = _vector2<float>;
+using Fvector2 = _vector2<dReal>;
 
 XRSOUND_API extern u32 psSoundModel;
 XRSOUND_API extern float psSoundVEffects;
