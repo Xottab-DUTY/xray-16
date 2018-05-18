@@ -8,9 +8,9 @@
 
 // fwd. decl.
 template <class T> struct _vector3;
-typedef _vector3<dReal> Fvector;
+typedef _vector3<float> Fvector;
 template <class T> struct _vector4;
-typedef _vector4<dReal> Fvector4;
+typedef _vector4<float> Fvector4;
 class shared_str;
 
 

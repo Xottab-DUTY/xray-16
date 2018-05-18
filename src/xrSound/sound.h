@@ -27,7 +27,7 @@ struct xr_token;
 class IReader;
 template <class T>
 struct _vector2;
-using Fvector2 = _vector2<dReal>;
+using Fvector2 = _vector2<float>;
 
 XRSOUND_API extern u32 psSoundModel;
 XRSOUND_API extern float psSoundVEffects;
