@@ -721,53 +721,139 @@ void CRender::addShaderOption(const char* name, const char* value)
     m_ShaderOptions += "\n";
 }
 
+template <typename T>
+static bool create_shader(EShLanguage stage, glslang::TProgram& program, LPCSTR const file_name,
+    T*& result, bool const disasm)
+{
+    std::vector<u32> spirv;
+    glslang::GlslangToSpv(*program.getIntermediate(stage), spirv);
+    result->sh = ShaderTypeTraits<T>::CreateHWShader((DWORD const*)spirv.data(), spirv.size()/* * sizeof(u32)*/);
+
+    bool const _result = program.buildReflection();
+    if (_result)
+    {
+        // Parse constant table data
+        result->constants.parse(&program, ShaderTypeTraits<T>::GetShaderDest());
+    }
+    else
+    {
+        Msg("! buildReflection failed");
+        Log("! error: ", program.getInfoLog());
+        Log("! debug: ", program.getInfoDebugLog());
+    }
+
+    // TODO: VK: Support SPIR-V assembly dumping
+    /*if (disasm)
+    {
+        ID3DBlob* disasm = 0;
+        D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm);
+        // D3DXDisassembleShader		(LPDWORD(code->GetBufferPointer()), FALSE, 0, &disasm );
+        string_path dname;
+        strconcat(sizeof(dname), dname, "disasm\\", file_name,
+        ('v' == pTarget[0]) ? ".vs" : ('p' == pTarget[0]) ? ".ps" : ".gs");
+        IWriter* W = FS.w_open("$logs$", dname);
+        W->w(disasm->GetBufferPointer(), (u32)disasm->GetBufferSize());
+        FS.w_close(W);
+        _RELEASE(disasm);
+    }*/
+
+    return _result;
+}
+
+static bool create_shader(EShLanguage stage, glslang::TProgram& program, LPCSTR const file_name,
+    void*& result, bool const disasm)
+{
+    bool _result = false;
+
+    if (stage == EShLangFragment)
+        _result = create_shader(stage, program, file_name, (SPS*&)result, disasm);
+
+    else if (stage == EShLangVertex)
+        _result = create_shader(stage, program, file_name, (SVS*&)result, disasm);
+
+    else if (stage == EShLangGeometry)
+        _result = create_shader(stage, program, file_name, (SGS*&)result, disasm);
+
+    else if (stage == EShLangCompute)
+        _result = create_shader(stage, program, file_name, (SCS*&)result, disasm);
+    
+    else if (stage == EShLangTessControl)
+        _result = create_shader(stage, program, file_name, (SHS*&)result, disasm);
+
+    else if (stage == EShLangTessEvaluation)
+        _result = create_shader(stage, program, file_name, (SDS*&)result, disasm);
+    else
+        NODEFAULT;
+
+    return _result;
+}
+
 static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shader_id,
                                    FS_FileSet const& file_set, string_path& result);
 
-/////////
-
-static inline void load_includes(LPCSTR pSrcData, UINT SrcDataLen, xr_vector<char*>& source, xr_vector<char*>& includes)
+class Includer : public glslang::TShader::Includer
 {
-    // Copy source file data into a null-terminated buffer
-    char* srcData = xr_alloc<char>(SrcDataLen + 2);
-    memcpy(srcData, pSrcData, SrcDataLen);
-    srcData[SrcDataLen] = '\n';
-    srcData[SrcDataLen + 1] = '\0';
-    includes.push_back(srcData);
-    source.push_back(srcData);
-
-    string_path path;
-    char* str = srcData;
-    while (strstr(str, "#include") != nullptr)
+public:
+    IncludeResult* createResult(const char* headerName, IReader* R)
     {
-        // Get filename of include directive
-        str = strstr(str, "#include"); // Find the include directive
-        char* fn = strchr(str, '"') + 1; // Get filename, skip quotation
-        *str = '\0'; // Terminate previous source
-        str = strchr(fn, '"'); // Get end of filename path
-        *str = '\0'; // Terminate filename path
-
-        // Create path to included shader
-        strconcat(sizeof path, path, GEnv.Render->getShaderPath(), fn);
-        FS.update_path(path, "$game_shaders$", path);
-        while (char* sep = strchr(path, '/')) *sep = '\\';
-
-        // Open and read file, recursively load includes
-        IReader* R = FS.r_open(path);
-        R_ASSERT2(R, path);
-        load_includes((char*)R->pointer(), R->length(), source, includes);
+        // duplicate and zero-terminate
+        u32 size = R->length();
+        char* data = xr_alloc<char>(size + 1);
+        CopyMemory(data, R->pointer(), size);
+        data[size] = 0;
         FS.r_close(R);
 
-        // Add next source, skip quotation
-        str++;
-        source.push_back(str);
+        return new IncludeResult(headerName, data, size, data);
     }
-}
 
-struct SHADER_MACRO
-{
-    char *Define = "#define ", *Name = "\n", *Sep = "\t", *Definition = "\n", *EOL = "\n";
+    IncludeResult* includeSystem(const char* headerName, const char* includerName, size_t inclusionDepth)
+    {
+        // possibly in shared directory or somewhere else - open directly
+        IReader* R = FS.r_open("$game_shaders$", headerName);
+        if (0 == R)
+            return nullptr;
+
+        return createResult(headerName, R);
+    }
+
+    IncludeResult* includeLocal(const char* headerName, const char* includerName, size_t inclusionDepth)
+    {
+        string_path pname;
+        strconcat(sizeof(pname), pname, GEnv.Render->getShaderPath(), headerName);
+        IReader* R = FS.r_open("$game_shaders$", pname);
+        if (0 == R)
+            return nullptr;
+
+        return createResult(headerName, R);
+    }
+
+    void releaseInclude(IncludeResult* pResult)
+    {
+        xr_free(pResult->userData);
+        delete pResult;
+    }
 };
+
+struct Macro
+{
+    char* Name;
+    char* Definition;
+};
+
+xr_string GetPreamble(Macro* defines)
+{
+    xr_string result;
+    while (defines->Name && defines->Definition)
+    {
+        result += "#define ";
+        result += defines->Name;
+        result += " ";
+        result += defines->Definition;
+        result += "\n";
+        ++defines;
+    }
+    return result;
+}
 
 HRESULT CRender::shader_compile(
     LPCSTR name,
@@ -778,8 +864,7 @@ HRESULT CRender::shader_compile(
     DWORD Flags,
     void*& result)
 {
-    xr_vector<char*> source, includes;
-    SHADER_MACRO defines[128];
+    Macro defines[128];
     int def_it = 0;
     char c_smapsize[32];
     char c_gloss[32];
@@ -788,15 +873,11 @@ HRESULT CRender::shader_compile(
     char c_sun_quality[32];
 
     // TODO: OGL: Implement these parameters.
-    VERIFY(!pFunctionName);
-    VERIFY(!pTarget);
-    VERIFY(!Flags);
-
-    // open included files
-    load_includes((LPCSTR)pSrcData, SrcDataLen, source, includes);
+    UNUSED(SrcDataLen);
+    UNUSED(Flags);
 
     char sh_name[MAX_PATH] = "";
-    u32 len = 0;
+    auto len = xr_strlen(sh_name);
     // options
     {
         xr_sprintf(c_smapsize, "%04d", u32(o.smapsize));
@@ -916,6 +997,7 @@ HRESULT CRender::shader_compile(
     sh_name[len] = '0' + char(o.sunstatic);
     ++len;
 
+    // XXX: this was removed in R4, but used in previous renderers
     if (o.forcegloss)
     {
         xr_sprintf(c_gloss, "%f", o.forcegloss_v);
@@ -949,38 +1031,62 @@ HRESULT CRender::shader_compile(
         defines[def_it].Name = "HDAO";
         defines[def_it].Definition = "1";
         def_it++;
+        sh_name[len] = '1';
+        ++len;
+        sh_name[len] = '0';
+        ++len;
+        sh_name[len] = '0';
+        ++len;
     }
-    sh_name[len] = '0' + char(o.ssao_hdao);
-    ++len;
-
-    if (o.ssao_hbao)
+    else
     {
-        defines[def_it].Name = "USE_HBAO";
-        defines[def_it].Definition = "1";
-        def_it++;
-        if (o.hbao_vectorized)
+        sh_name[len] = '0';
+        ++len;
+        sh_name[len] = '0' + char(o.ssao_hbao);
+        ++len;
+        sh_name[len] = '0' + char(o.ssao_half_data);
+        ++len;
+        if (o.ssao_hbao)
         {
-            defines[def_it].Name = "VECTORIZED_CODE";
+            defines[def_it].Name = "SSAO_OPT_DATA";
+            if (o.ssao_half_data)
+            {
+                defines[def_it].Definition = "2";
+            }
+            else
+            {
+                defines[def_it].Definition = "1";
+            }
+            def_it++;
+
+            if (o.hbao_vectorized)
+            {
+                defines[def_it].Name = "VECTORIZED_CODE";
+                defines[def_it].Definition = "1";
+                def_it++;
+            }
+
+            defines[def_it].Name = "USE_HBAO";
             defines[def_it].Definition = "1";
             def_it++;
         }
     }
-    sh_name[len] = '0' + char(o.ssao_hbao);
-    ++len;
-    sh_name[len] = '0' + char(o.ssao_hbao ? o.hbao_vectorized : 0);
-    ++len;
 
-    if (o.ssao_opt_data)
+    if (o.dx10_msaa)
     {
-        defines[def_it].Name = "SSAO_OPT_DATA";
-        if (o.ssao_half_data)
-            defines[def_it].Definition = "2";
-        else
-            defines[def_it].Definition = "1";
+        static char def[256];
+        def[1] = 0;
+        defines[def_it].Name = "ISAMPLE";
+        defines[def_it].Definition = def;
         def_it++;
+        sh_name[len] = '0';
+        ++len;
     }
-    sh_name[len] = '0' + char(o.ssao_opt_data ? (o.ssao_half_data ? 2 : 1) : 0);
-    ++len;
+    else
+    {
+        sh_name[len] = '0';
+        ++len;
+    }
 
     // skinning
     if (m_skinning < 0)
@@ -1162,6 +1268,17 @@ HRESULT CRender::shader_compile(
     sh_name[len] = '0' + char(o.dx10_sm4_1);
     ++len;
 
+    // XXX: #FIXME!!!
+    /*R_ASSERT(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
+    if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0)
+    {
+        defines[def_it].Name = "SM_5";
+        defines[def_it].Definition = "1";
+        def_it++;
+    }
+    sh_name[len] = '0' + char(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
+    ++len;*/
+
     if (o.dx10_minmax_sm)
     {
         defines[def_it].Name = "USE_MINMAX_SM";
@@ -1171,32 +1288,26 @@ HRESULT CRender::shader_compile(
     sh_name[len] = '0' + char(o.dx10_minmax_sm != 0);
     ++len;
 
+    // Be carefull!!!!! this should be at the end to correctly generate
+    // compiled shader name;
     // add a #define for DX10_1 MSAA support
     if (o.dx10_msaa)
     {
-        static char samples[2];
-
         defines[def_it].Name = "USE_MSAA";
         defines[def_it].Definition = "1";
         def_it++;
+        sh_name[len] = '1';
+        ++len;
+
+        static char samples[2];
 
         defines[def_it].Name = "MSAA_SAMPLES";
         samples[0] = char(o.dx10_msaa_samples) + '0';
         samples[1] = 0;
         defines[def_it].Definition = samples;
         def_it++;
-
-        static char def[256];
-        if (m_MSAASample < 0)
-            def[0] = '0';
-        else
-            def[0] = '0' + char(m_MSAASample);
-
-        def[1] = 0;
-        defines[def_it].Name = "ISAMPLE";
-        defines[def_it].Definition = def;
-        def_it++;
-
+        sh_name[len] = '0' + char(o.dx10_msaa_samples);
+        ++len;
 
         if (o.dx10_msaa_opt)
         {
@@ -1204,13 +1315,6 @@ HRESULT CRender::shader_compile(
             defines[def_it].Definition = "1";
             def_it++;
         }
-
-        sh_name[len] = '1';
-        ++len;
-        sh_name[len] = '0' + char(o.dx10_msaa_samples);
-        ++len;
-        sh_name[len] = '0';
-        ++len;
         sh_name[len] = '0' + char(o.dx10_msaa_opt);
         ++len;
 
@@ -1272,106 +1376,191 @@ HRESULT CRender::shader_compile(
         ++len;
         sh_name[len] = '0';
         ++len;
-        sh_name[len] = '0';
-        ++len;
     }
 
-    // Compile sources list
-    size_t def_len = def_it * 5;
-    size_t sources_len = source.size() + def_len + 2;
-    string256 name_comment;
-    sprintf_s(name_comment, "// %s\n", name);
-    const char** sources = xr_alloc<const char*>(sources_len);
-#ifdef DEBUG
-	sources[0] = "#version 450\n#pragma optimize (off)\n";
-#else
-    sources[0] = "#version 450\n";
-#endif
-    sources[1] = name_comment;
-    memcpy(sources + 2, defines, def_len * sizeof(char*));
-    memcpy(sources + def_len + 2, source.data(), source.size() * sizeof(char*));
+    sh_name[len] = '\0';
 
-    // Compile the shader
-    GLuint shader = *(GLuint*)result;
-    R_ASSERT(shader);
-    CHK_GL(glShaderSource(shader, sources_len, sources, nullptr));
-    CHK_GL(glCompileShader(shader));
+    // finish
+    defines[def_it].Name = nullptr;
+    defines[def_it].Definition = nullptr;
+    ++def_it;
 
-    // Create the shader program
-    GLuint program = glCreateProgram();
-    R_ASSERT(program);
-    CHK_GL(glObjectLabel(GL_PROGRAM, program, -1, name));
-    CHK_GL(glProgramParameteri(program, GL_PROGRAM_SEPARABLE, (GLint)GL_TRUE));
-    *(GLuint*)result = program;
+    bool _result = false;
 
-    // Free string resources
-    xr_free(sources);
-    for (xr_vector<char*>::iterator it = includes.begin(); it != includes.end(); ++it)
-        xr_free(*it);
+    string_path folder_name, folder;
+    xr_strcpy(folder, "r3\\objects\\glspv\\");
+    xr_strcat(folder, name);
+    xr_strcat(folder, ".");
 
-    // Get the compilation result
-    GLint status;
-    CHK_GL(glGetShaderiv(shader, GL_COMPILE_STATUS, &status));
+    char extension[3];
+    strncpy_s(extension, pTarget, 2);
+    xr_strcat(folder, extension);
 
-    // Link program if compilation succeeded
-    GLchar* _pErrorMsgs = nullptr;
-    if ((GLboolean)status == GL_TRUE)
+    FS.update_path(folder_name, "$game_shaders$", folder);
+    xr_strcat(folder_name, "\\");
+
+    m_file_set.clear();
+    FS.file_list(m_file_set, folder_name, FS_ListFiles | FS_RootOnly, "*");
+
+    string_path temp_file_name, file_name;
+    if (!match_shader_id(name, sh_name, m_file_set, temp_file_name))
     {
-        CHK_GL(glAttachShader(program, shader));
-        CHK_GL(glBindFragDataLocation(program, 0, "SV_Target"));
-        CHK_GL(glBindFragDataLocation(program, 0, "SV_Target0"));
-        CHK_GL(glBindFragDataLocation(program, 1, "SV_Target1"));
-        CHK_GL(glBindFragDataLocation(program, 2, "SV_Target2"));
-        CHK_GL(glLinkProgram(program));
-        CHK_GL(glDetachShader(program, shader));
-        CHK_GL(glGetProgramiv(program, GL_LINK_STATUS, &status));
-
-        if ((GLboolean)status == GL_FALSE)
-        {
-            GLint length;
-            CHK_GL(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length));
-            _pErrorMsgs = xr_alloc<GLchar>(length);
-            CHK_GL(glGetProgramInfoLog(program, length, nullptr, _pErrorMsgs));
-        }
+        string_path file;
+        xr_strcpy(file, "shaders_cache\\glspv\\");
+        xr_strcat(file, name);
+        xr_strcat(file, ".");
+        xr_strcat(file, extension);
+        xr_strcat(file, "\\");
+        xr_strcat(file, sh_name);
+        FS.update_path(file_name, "$app_data_root$", file);
     }
     else
     {
-        GLint length;
-        CHK_GL(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length));
-        _pErrorMsgs = xr_alloc<GLchar>(length);
-        CHK_GL(glGetShaderInfoLog(shader, length, nullptr, _pErrorMsgs));
+        xr_strcpy(file_name, folder_name);
+        xr_strcat(file_name, temp_file_name);
     }
 
-    if ((GLboolean)status == GL_FALSE)
+    // TODO: Load the cached SPIR-V once we figure out how to store the reflection data
+    /*if (FS.exist(file_name))
     {
-#ifdef DEBUG
-        GLint srcLen;
-        CHK_GL(glGetShaderiv(shader, GL_SHADER_SOURCE_LENGTH, &srcLen));
-        GLchar* shaderSrc = xr_alloc<GLchar>(srcLen);
-        CHK_GL(glGetShaderSource(shader, srcLen, nullptr, shaderSrc));
-#endif
-
-        Msg("! shader compilation failed");
-        Log("! ", name);
-        if (_pErrorMsgs)
-            Log("! error: ", _pErrorMsgs);
-
-#ifdef DEBUG
-        if (shaderSrc)
+        IReader* file = FS.r_open(file_name);
+        if (file->length() > 4)
         {
-            Log("Shader source:");
-            Log(shaderSrc);
-            Log("Shader source end.");
+            u32 crc = file->r_u32();
+            u32 crcComp = crc32(file->pointer(), file->elapsed());
+            if (crcComp == crc)
+                _result = create_shader(pTarget, (u32*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
         }
-        xr_free(shaderSrc);
-#endif
+        file->close();
+    }*/
 
-        xr_free(_pErrorMsgs);
-        CHK_GL(glDeleteShader(shader));
-        return E_FAIL;
+    if (!_result)
+    {
+        EShLanguage stage = EShLangCount;
+        if ('v' == pTarget[0])
+            stage = EShLangVertex;
+        else if ('p' == pTarget[0])
+            stage = EShLangFragment;
+        else if ('g' == pTarget[0])
+            stage = EShLangGeometry;
+        else if ('h' == pTarget[0])
+            stage = EShLangTessControl;
+        else if ('d' == pTarget[0])
+            stage = EShLangTessEvaluation;
+        else if ('c' == pTarget[0])
+            stage = EShLangCompute;
+        else
+            NODEFAULT;
+
+        Includer includer;
+        glslang::TShader shader(stage);
+        glslang::TProgram program;
+        shader.setEntryPoint(pFunctionName);
+        shader.setHlslIoMapping(true);
+
+        // Enable SPIR-V rules when parsing HLSL
+        EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgReadHlsl | EShMsgHlslOffsets | EShMsgRelaxedErrors | EShMsgHlslLegalization);
+
+        xr_string preamble = m_ShaderOptions + GetPreamble(defines);
+        shader.setPreamble(preamble.c_str());
+        shader.setStrings((const char**)&pSrcData, 1);
+        _result = shader.parse(&HW.resources, 100, ENoProfile, false, false, messages, includer);
+
+        if (_result)
+        {
+            program.addShader(&shader);
+            _result = program.link(messages);
+        }
+
+        if (_result)
+        {
+            // TODO: Write the cached SPIR-V once we figure out how to store the reflection data
+            /*std::vector<u32> spirv;
+            glslang::GlslangToSpv(*program.getIntermediate(stage), spirv);
+
+            IWriter* file = FS.w_open(file_name);
+            u32 crc = crc32(spirv.data(), spirv.size() * sizeof(u32));
+            file->w_u32(crc);
+            file->w(spirv.data(), spirv.size() * sizeof(u32));
+            FS.w_close(file);*/
+
+            _result = create_shader(stage, program,
+                file_name, result, o.disasm);
+        }
+        else
+        {
+            Log("! ", file_name);
+            Log("! error: ", shader.getInfoLog());
+            Log("! debug: ", shader.getInfoDebugLog());
+        }
     }
 
-    xr_free(_pErrorMsgs);
-    CHK_GL(glDeleteShader(shader));
-    return S_OK;
+    if (_result)
+        return S_OK;
+    return E_FAIL;
 }
+
+static inline bool match_shader(
+    LPCSTR const debug_shader_id, LPCSTR const full_shader_id, LPCSTR const mask, size_t const mask_length)
+{
+    u32 const full_shader_id_length = xr_strlen(full_shader_id);
+    R_ASSERT2(full_shader_id_length == mask_length,
+        make_string("bad cache for shader %s, [%s], [%s]", debug_shader_id, mask, full_shader_id));
+    char const* i = full_shader_id;
+    char const* const e = full_shader_id + full_shader_id_length;
+    char const* j = mask;
+    for (; i != e; ++i, ++j)
+    {
+        if (*i == *j)
+            continue;
+
+        if (*j == '_')
+            continue;
+
+        return false;
+    }
+
+    return true;
+}
+
+static inline bool match_shader_id(
+    LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result)
+{
+#if 0
+    strcpy_s(result, "");
+    return						false;
+#else // #if 1
+#ifdef DEBUG
+    LPCSTR temp = "";
+    bool found = false;
+    FS_FileSet::const_iterator i = file_set.begin();
+    FS_FileSet::const_iterator const e = file_set.end();
+    for (; i != e; ++i)
+    {
+        if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
+        {
+            VERIFY(!found);
+            found = true;
+            temp = (*i).name.c_str();
+        }
+    }
+
+    xr_strcpy(result, temp);
+    return found;
+#else // #ifdef DEBUG
+    FS_FileSet::const_iterator i = file_set.begin();
+    FS_FileSet::const_iterator const e = file_set.end();
+    for (; i != e; ++i)
+    {
+        if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
+        {
+            xr_strcpy(result, (*i).name.c_str());
+            return true;
+        }
+    }
+
+    return false;
+#endif // #ifdef DEBUG
+#endif // #if 1
+}
+

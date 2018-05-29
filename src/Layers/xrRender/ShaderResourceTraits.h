@@ -48,6 +48,7 @@ struct ShaderTypeTraits<SVS>
 
 #ifdef USE_OGL
         sh = glCreateShader(GL_VERTEX_SHADER);
+        glShaderBinary(1, &sh, GL_SHADER_BINARY_FORMAT_SPIR_V, (const char**)buffer, size);
 #elif defined(USE_DX11)
         R_CHK(HW.pDevice->CreateVertexShader(buffer, size, 0, &sh));
 #elif defined(USE_DX10)
@@ -114,6 +115,7 @@ struct ShaderTypeTraits<SPS>
 
 #ifdef USE_OGL
         sh = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderBinary(1, &sh, GL_SHADER_BINARY_FORMAT_SPIR_V, (const char**)buffer, size);
 #elif defined(USE_DX11)
         R_CHK(HW.pDevice->CreatePixelShader(buffer, size, 0, &sh));
 #elif defined(USE_DX10)
@@ -174,6 +176,7 @@ struct ShaderTypeTraits<SGS>
 
 #ifdef USE_OGL
         sh = glCreateShader(GL_GEOMETRY_SHADER);
+        glShaderBinary(1, &sh, GL_SHADER_BINARY_FORMAT_SPIR_V, (const char**)buffer, size);
 #elif defined(USE_DX11)
         R_CHK(HW.pDevice->CreateGeometryShader(buffer, size, 0, &sh));
 #else
@@ -214,6 +217,7 @@ struct ShaderTypeTraits<SHS>
 
 #ifdef USE_OGL
         sh = glCreateShader(GL_TESS_CONTROL_SHADER);
+        glShaderBinary(1, &sh, GL_SHADER_BINARY_FORMAT_SPIR_V, (const char**)buffer, size);
 #else
         R_CHK(HW.pDevice->CreateHullShader(buffer, size, NULL, &sh));
 #endif
@@ -250,6 +254,7 @@ struct ShaderTypeTraits<SDS>
 
 #ifdef USE_OGL
         sh = glCreateShader(GL_TESS_EVALUATION_SHADER);
+        glShaderBinary(1, &sh, GL_SHADER_BINARY_FORMAT_SPIR_V, (const char**)buffer, size);
 #else
         R_CHK(HW.pDevice->CreateDomainShader(buffer, size, NULL, &sh));
 #endif
@@ -286,6 +291,7 @@ struct ShaderTypeTraits<SCS>
         
 #ifdef USE_OGL
         sh = glCreateShader(GL_COMPUTE_SHADER);
+        glShaderBinary(1, &sh, GL_SHADER_BINARY_FORMAT_SPIR_V, (const char**)buffer, size);
 #else
         R_CHK(HW.pDevice->CreateComputeShader(buffer, size, NULL, &sh));
 #endif
