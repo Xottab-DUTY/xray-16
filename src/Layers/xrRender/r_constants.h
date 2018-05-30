@@ -6,6 +6,14 @@
 #include "Layers/xrRenderDX10/dx10ConstantBuffer.h"
 #endif // USE_DX10
 
+#ifdef USE_OGL
+namespace glslang
+{
+class TProgram;
+class TType;
+}
+#endif
+
 class ECORE_API R_constant_setup;
 
 enum
@@ -164,7 +172,10 @@ public:
 private:
     void fatal(LPCSTR s);
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_OGL)
+    BOOL parseConstants(const glslang::TType* pTable, u32 destination);
+    BOOL parseResources(const glslang::TProgram* pReflection, u32 destination);
+#elif defined(USE_DX10) || defined(USE_DX11)
     BOOL parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
     BOOL parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
 #endif // USE_DX10

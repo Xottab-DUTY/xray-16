@@ -1457,9 +1457,14 @@ HRESULT CRender::shader_compile(
         glslang::TProgram program;
         shader.setEntryPoint(pFunctionName);
         shader.setHlslIoMapping(true);
-
+        shader.setAutoMapBindings(true);
+        shader.setAutoMapLocations(true);
+        shader.setEnvClient(glslang::EShClientOpenGL, glslang::EShTargetOpenGL_450);
+        //shader.setEnvClient(glslang::EShClientVulkan, glslang::EShTargetVulkan_1_0);
+        shader.setEnvTarget(glslang::EShTargetSpv, glslang::EShTargetSpv_1_0);
+        
         // Enable SPIR-V rules when parsing HLSL
-        EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgReadHlsl | EShMsgHlslOffsets | EShMsgRelaxedErrors | EShMsgHlslLegalization);
+        EShMessages messages = (EShMessages)(EShMsgSpvRules | /*EShMsgVulkanRules |*/ EShMsgReadHlsl | EShMsgHlslOffsets | EShMsgRelaxedErrors | EShMsgHlslLegalization);
 
         xr_string preamble = m_ShaderOptions + GetPreamble(defines);
         shader.setPreamble(preamble.c_str());
