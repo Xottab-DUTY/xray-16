@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Mixed|Win32">
+      <Configuration>Mixed</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Mixed|x64">
+      <Configuration>Mixed</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{E62ABC0A-8477-4363-A9A0-F11257BB5951}</ProjectGuid>
+    <RootNamespace>HLSLcc</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\src\Common.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp14</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">stdcpp14</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp14</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp14</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">stdcpp14</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp14</LanguageStandard>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(xrExternals)HLSLcc\;$(xrExternals)HLSLcc\include;$(xrExternals)HLSLcc\src\cbstring;$(xrExternals)HLSLcc\src\internal_includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">$(xrExternals)HLSLcc\;$(xrExternals)HLSLcc\include;$(xrExternals)HLSLcc\src\cbstring;$(xrExternals)HLSLcc\src\internal_includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(xrExternals)HLSLcc\;$(xrExternals)HLSLcc\include;$(xrExternals)HLSLcc\src\cbstring;$(xrExternals)HLSLcc\src\internal_includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(xrExternals)HLSLcc\;$(xrExternals)HLSLcc\include;$(xrExternals)HLSLcc\src\cbstring;$(xrExternals)HLSLcc\src\internal_includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">$(xrExternals)HLSLcc\;$(xrExternals)HLSLcc\include;$(xrExternals)HLSLcc\src\cbstring;$(xrExternals)HLSLcc\src\internal_includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(xrExternals)HLSLcc\;$(xrExternals)HLSLcc\include;$(xrExternals)HLSLcc\src\cbstring;$(xrExternals)HLSLcc\src\internal_includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HLSLCC_DYNLIB;libHLSLcc_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">HLSLCC_DYNLIB;libHLSLcc_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HLSLCC_DYNLIB;libHLSLcc_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">HLSLCC_DYNLIB;libHLSLcc_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">HLSLCC_DYNLIB;libHLSLcc_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">HLSLCC_DYNLIB;libHLSLcc_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="HLSLcc\src\cbstring\bsafe.c" />
+    <ClCompile Include="HLSLcc\src\cbstring\bstraux.c" />
+    <ClCompile Include="HLSLcc\src\cbstring\bstrlib.c" />
+    <ClCompile Include="HLSLcc\src\ControlFlowGraph.cpp" />
+    <ClCompile Include="HLSLcc\src\ControlFlowGraphUtils.cpp" />
+    <ClCompile Include="HLSLcc\src\DataTypeAnalysis.cpp" />
+    <ClCompile Include="HLSLcc\src\Declaration.cpp" />
+    <ClCompile Include="HLSLcc\src\decode.cpp" />
+    <ClCompile Include="HLSLcc\src\HLSLcc.cpp" />
+    <ClCompile Include="HLSLcc\src\HLSLccToolkit.cpp" />
+    <ClCompile Include="HLSLcc\src\HLSLCrossCompilerContext.cpp" />
+    <ClCompile Include="HLSLcc\src\Instruction.cpp" />
+    <ClCompile Include="HLSLcc\src\LoopTransform.cpp" />
+    <ClCompile Include="HLSLcc\src\Operand.cpp" />
+    <ClCompile Include="HLSLcc\src\reflect.cpp" />
+    <ClCompile Include="HLSLcc\src\Shader.cpp" />
+    <ClCompile Include="HLSLcc\src\ShaderInfo.cpp" />
+    <ClCompile Include="HLSLcc\src\toGLSL.cpp" />
+    <ClCompile Include="HLSLcc\src\toGLSLDeclaration.cpp" />
+    <ClCompile Include="HLSLcc\src\toGLSLInstruction.cpp" />
+    <ClCompile Include="HLSLcc\src\toGLSLOperand.cpp" />
+    <ClCompile Include="HLSLcc\src\toMetal.cpp" />
+    <ClCompile Include="HLSLcc\src\toMetalDeclaration.cpp" />
+    <ClCompile Include="HLSLcc\src\toMetalInstruction.cpp" />
+    <ClCompile Include="HLSLcc\src\toMetalOperand.cpp" />
+    <ClCompile Include="HLSLcc\src\UseDefineChains.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="HLSLcc\src\HLSLccTypes.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HLSLcc\src\cbstring\bsafe.h" />
+    <ClInclude Include="HLSLcc\src\cbstring\bstraux.h" />
+    <ClInclude Include="HLSLcc\src\cbstring\bstrlib.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\ControlFlowGraph.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\ControlFlowGraphUtils.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\DataTypeAnalysis.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\debug.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\Declaration.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\decode.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\HLSLccToolkit.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\HLSLCrossCompilerContext.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\Instruction.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\languages.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\LoopTransform.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\Operand.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\reflect.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\Shader.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\toGLSL.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\toGLSLOperand.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\tokens.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\toMetal.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\toMetalDeclaration.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\Translator.h" />
+    <ClInclude Include="HLSLcc\src\internal_includes\UseDefineChains.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="HLSLcc\src\cbstring\bstrlib.txt" />
+    <Text Include="HLSLcc\src\cbstring\license.txt" />
+    <Text Include="HLSLcc\src\cbstring\porting.txt" />
+    <Text Include="HLSLcc\src\cbstring\security.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

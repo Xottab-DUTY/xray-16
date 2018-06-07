@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="internal_includes">
+      <UniqueIdentifier>{9f4ec05f-7e2c-4027-93ed-01f7f5b02edf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cbstring">
+      <UniqueIdentifier>{ec2bb050-4874-43b0-a305-a0788089905e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HLSLcc\src\internal_includes\LoopTransform.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\Operand.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\reflect.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\Shader.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\toGLSL.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\toGLSLOperand.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\tokens.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\toMetal.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\toMetalDeclaration.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\Translator.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\UseDefineChains.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\ControlFlowGraph.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\ControlFlowGraphUtils.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\DataTypeAnalysis.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\debug.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\Declaration.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\decode.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\HLSLccToolkit.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\HLSLCrossCompilerContext.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\Instruction.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\internal_includes\languages.h">
+      <Filter>internal_includes</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\cbstring\bsafe.h">
+      <Filter>cbstring</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\cbstring\bstraux.h">
+      <Filter>cbstring</Filter>
+    </ClInclude>
+    <ClInclude Include="HLSLcc\src\cbstring\bstrlib.h">
+      <Filter>cbstring</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="HLSLcc\src\cbstring\bsafe.c">
+      <Filter>cbstring</Filter>
+    </ClCompile>
+    <ClCompile Include="HLSLcc\src\cbstring\bstraux.c">
+      <Filter>cbstring</Filter>
+    </ClCompile>
+    <ClCompile Include="HLSLcc\src\cbstring\bstrlib.c">
+      <Filter>cbstring</Filter>
+    </ClCompile>
+    <ClCompile Include="HLSLcc\src\ControlFlowGraph.cpp" />
+    <ClCompile Include="HLSLcc\src\ControlFlowGraphUtils.cpp" />
+    <ClCompile Include="HLSLcc\src\DataTypeAnalysis.cpp" />
+    <ClCompile Include="HLSLcc\src\Declaration.cpp" />
+    <ClCompile Include="HLSLcc\src\decode.cpp" />
+    <ClCompile Include="HLSLcc\src\HLSLcc.cpp" />
+    <ClCompile Include="HLSLcc\src\HLSLccToolkit.cpp" />
+    <ClCompile Include="HLSLcc\src\HLSLCrossCompilerContext.cpp" />
+    <ClCompile Include="HLSLcc\src\Instruction.cpp" />
+    <ClCompile Include="HLSLcc\src\LoopTransform.cpp" />
+    <ClCompile Include="HLSLcc\src\Operand.cpp" />
+    <ClCompile Include="HLSLcc\src\reflect.cpp" />
+    <ClCompile Include="HLSLcc\src\Shader.cpp" />
+    <ClCompile Include="HLSLcc\src\ShaderInfo.cpp" />
+    <ClCompile Include="HLSLcc\src\toGLSL.cpp" />
+    <ClCompile Include="HLSLcc\src\toGLSLDeclaration.cpp" />
+    <ClCompile Include="HLSLcc\src\toGLSLInstruction.cpp" />
+    <ClCompile Include="HLSLcc\src\toGLSLOperand.cpp" />
+    <ClCompile Include="HLSLcc\src\toMetal.cpp" />
+    <ClCompile Include="HLSLcc\src\toMetalDeclaration.cpp" />
+    <ClCompile Include="HLSLcc\src\toMetalInstruction.cpp" />
+    <ClCompile Include="HLSLcc\src\toMetalOperand.cpp" />
+    <ClCompile Include="HLSLcc\src\UseDefineChains.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="HLSLcc\src\cbstring\bstrlib.txt">
+      <Filter>cbstring</Filter>
+    </Text>
+    <Text Include="HLSLcc\src\cbstring\license.txt">
+      <Filter>cbstring</Filter>
+    </Text>
+    <Text Include="HLSLcc\src\cbstring\porting.txt">
+      <Filter>cbstring</Filter>
+    </Text>
+    <Text Include="HLSLcc\src\cbstring\security.txt">
+      <Filter>cbstring</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="HLSLcc\src\HLSLccTypes.natvis" />
+  </ItemGroup>
+</Project>
