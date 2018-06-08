@@ -78,7 +78,11 @@ struct ShaderTypeTraits<SPS>
     static inline const char* GetShaderExt() { return ".ps"; }
     static inline const char* GetCompilationTarget()
     {
+#ifdef USE_OGL
+        return "ps_4_0";
+#else
         return "ps_2_0";
+#endif
     }
 
     static void GetCompilationTarget(const char*& target, const char*& entry, const char* data)

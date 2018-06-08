@@ -169,8 +169,8 @@
     <Filter Include="Core_Target\ColorMap">
       <UniqueIdentifier>{7fdc926e-8c7d-4cba-a662-332feb1aada8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shading templates\GL Rain">
-      <UniqueIdentifier>{07d880a0-66f9-4c25-a538-c4076b2cf662}</UniqueIdentifier>
+    <Filter Include="Shading templates\DX10 Rain">
+      <UniqueIdentifier>{9061b5c6-a113-45da-8cb8-ad819f742f9b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -238,9 +238,6 @@
       <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\blenders\Blender.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\blenders\Blender_Palette.cpp">
       <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp">
@@ -666,20 +663,26 @@
     <ClCompile Include="r3_R_sun_support.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRenderGL\Blender_Recorder_GL.cpp">
-      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRenderGL\GL Rain\glRainBlender.cpp">
-      <Filter>Shading templates\GL Rain</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRenderGL\glMinMaxSMBlender.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRenderGL\MSAA\glMSAABlender.cpp">
-      <Filter>Interface implementations\MSAARender</Filter>
-    </ClCompile>
     <ClCompile Include="gl_rendertarget_phase_flip.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\DX10 Rain\dx10RainBlender.cpp">
+      <Filter>Shading templates\DX10 Rain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\MSAA\dx10MSAABlender.cpp">
+      <Filter>Interface implementations\MSAARender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\Blender_Recorder_R3.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10MinMaxSMBlender.cpp">
+      <Filter>Shading templates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\blenders\Blender_Palette.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\dx10ResourceManager_Scripting.cpp">
+      <Filter>Refactored\Execution &amp; 3D\Shaders\ShaderManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1115,14 +1118,14 @@
     <ClInclude Include="r3_R_sun_support.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRenderGL\GL Rain\glRainBlender.h">
-      <Filter>Shading templates\GL Rain</Filter>
+    <ClInclude Include="..\xrRenderDX10\DX10 Rain\dx10RainBlender.h">
+      <Filter>Shading templates\DX10 Rain</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRenderGL\glMinMaxSMBlender.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRenderGL\MSAA\glMSAABlender.h">
+    <ClInclude Include="..\xrRenderDX10\MSAA\dx10MSAABlender.h">
       <Filter>Interface implementations\MSAARender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\dx10MinMaxSMBlender.h">
+      <Filter>Shading templates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

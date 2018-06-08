@@ -91,7 +91,7 @@ void CBlender_Particle::Compile(CBlender_Compile& C)
     C.r_Sampler("s_base", C.L_textures[0], false, oClamp.value ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP);
     C.r_End();
 }
-#elif RENDER == R_R2 || RENDER == R_GL
+#elif RENDER == R_R2 //|| RENDER == R_GL
 void CBlender_Particle::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);

@@ -40,7 +40,7 @@ void CBackend::OnFrameBegin()
     if (!GEnv.isDedicatedServer)
     {
         PGO(Msg("PGO:*****frame[%d]*****", RDEVICE.dwFrame));
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11) || defined(USE_OGL)
         Invalidate();
         // DX9 sets base rt nd base zb by default
         RImplementation.rmNormal();
@@ -217,7 +217,7 @@ void CBackend::set_Textures(STextureList* _T)
     // If resources weren't set at all we should clear from resource #0.
     int _last_ps = -1;
     int _last_vs = -1;
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11) || defined(USE_OGL)
     int _last_gs = -1;
 #ifdef USE_DX11
     int _last_hs = -1;
@@ -256,7 +256,7 @@ void CBackend::set_Textures(STextureList* _T)
             }
         }
         else
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11)|| defined(USE_OGL)
         if (load_id < CTexture::rstGeometry)
 #endif // UDE_DX10
         {

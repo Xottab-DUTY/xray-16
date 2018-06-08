@@ -134,7 +134,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         xr_strcat(name, "_3");
     if (4 == GEnv.Render->m_skinning)
         xr_strcat(name, "_4");
-    
+
     return CreateShader<SVS>(name, _name, true);
 }
 
@@ -414,6 +414,7 @@ CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
         T->Load();
     return T;
 }
+
 void CResourceManager::_DeleteTexture(const CTexture* T)
 {
     // DBG_VerifyTextures	();

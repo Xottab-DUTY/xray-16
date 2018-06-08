@@ -3,7 +3,7 @@
 
 dxConsoleRender::dxConsoleRender()
 {
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11) || defined(USE_OGL)
     m_Shader.create("hud\\crosshair");
     m_Geom.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
 #endif

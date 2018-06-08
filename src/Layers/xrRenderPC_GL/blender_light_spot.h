@@ -3,11 +3,10 @@
 class CBlender_accum_spot : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: accumulate spot light"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: accumulate spot light"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_spot();
     virtual ~CBlender_accum_spot();
@@ -16,11 +15,10 @@ public:
 class CBlender_accum_spot_msaa : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: accumulate spot light msaa"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: accumulate spot light msaa"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
     {
@@ -37,11 +35,10 @@ public:
 class CBlender_accum_volumetric_msaa : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: accumulate spot light msaa"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: accumulate spot light msaa"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
     {

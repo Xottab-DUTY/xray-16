@@ -3,11 +3,10 @@
 class CBlender_accum_point : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: accumulate point light"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: accumulate point light"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_point();
     virtual ~CBlender_accum_point();
@@ -16,21 +15,18 @@ public:
 class CBlender_accum_point_msaa : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: accumulate point light msaa"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: accumulate point light msaa"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     CBlender_accum_point_msaa();
     virtual ~CBlender_accum_point_msaa();
-
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
     {
         this->Name = Name;
         this->Definition = Definition;
     }
-
     LPCSTR Name;
     LPCSTR Definition;
 };

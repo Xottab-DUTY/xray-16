@@ -2,7 +2,11 @@
 #define r_constantsH
 #pragma once
 #include "xrCore/xr_resource.h"
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_OGL
+class ShaderInfo;
+struct ResourceBinding;
+struct ConstantBuffer;
+#elif defined(USE_DX10) || defined(USE_DX11)
 #include "Layers/xrRenderDX10/dx10ConstantBuffer.h"
 #endif // USE_DX10
 
@@ -164,15 +168,23 @@ public:
 private:
     void fatal(LPCSTR s);
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#ifdef USE_OGL
+    BOOL parseConstants(const ConstantBuffer* pTable, u32 destination);
+    BOOL parseResources(const ShaderInfo* shaderInfo, u32 destination);
+#elif defined(USE_DX10) || defined(USE_DX11)
     BOOL parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
     BOOL parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
-#endif // USE_DX10
+#endif
 
 public:
     ~R_constant_table();
 
     void clear();
+
+#ifdef USE_OGL
+    BOOL parse(const ShaderInfo* shaderInfo, u32 destination);
+#endif
+
     BOOL parse(void* desc, u32 destination);
     void merge(R_constant_table* C);
     ref_constant get(LPCSTR name); // slow search

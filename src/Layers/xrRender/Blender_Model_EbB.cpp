@@ -188,7 +188,7 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
         }
     }
 }
-#elif RENDER == R_GL
+#elif 0 && RENDER == R_GL
 #include "uber_deffer.h"
 void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 {

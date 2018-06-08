@@ -32,7 +32,6 @@ class adopt_dx10sampler
 {
     CBlender_Compile* m_pC;
     u32 m_SI; // Sampler index
-
 public:
     adopt_dx10sampler(CBlender_Compile* C, u32 SamplerIndex) : m_pC(C), m_SI(SamplerIndex)
     {
@@ -241,9 +240,12 @@ public:
 // export
 void CResourceManager::LS_Load()
 {
-    auto exporterFunc = [](lua_State* luaState) {
-        module(luaState)[class_<adopt_dx10options>("_dx10options")
-                             .def("dx10_msaa_alphatest_atoc", &adopt_dx10options::_dx10_msaa_alphatest_atoc)
+    auto exporterFunc = [](lua_State* luaState)
+    {
+        module(luaState)
+        [
+            class_<adopt_dx10options>("_dx10options")
+                .def("dx10_msaa_alphatest_atoc", &adopt_dx10options::_dx10_msaa_alphatest_atoc)
             //.def("",					&adopt_dx10options::_dx10Options		),	// returns options-object
             ,
 
@@ -294,24 +296,48 @@ void CResourceManager::LS_Load()
                 .def("dx10sampler", &adopt_compiler::_dx10sampler) // returns sampler-object
                 .def("dx10Options", &adopt_compiler::_dx10Options), // returns options-object
 
-            class_<adopt_blend>("blend").enum_("blend")[value("zero", int(D3DBLEND_ZERO)),
-                value("one", int(D3DBLEND_ONE)), value("srccolor", int(D3DBLEND_SRCCOLOR)),
-                value("invsrccolor", int(D3DBLEND_INVSRCCOLOR)), value("srcalpha", int(D3DBLEND_SRCALPHA)),
-                value("invsrcalpha", int(D3DBLEND_INVSRCALPHA)), value("destalpha", int(D3DBLEND_DESTALPHA)),
-                value("invdestalpha", int(D3DBLEND_INVDESTALPHA)), value("destcolor", int(D3DBLEND_DESTCOLOR)),
-                value("invdestcolor", int(D3DBLEND_INVDESTCOLOR)), value("srcalphasat", int(D3DBLEND_SRCALPHASAT))],
+            class_<adopt_blend>("blend")
+            .enum_("blend")
+            [
+                value("zero", int(D3DBLEND_ZERO)),
+                value("one", int(D3DBLEND_ONE)),
+                value("srccolor", int(D3DBLEND_SRCCOLOR)),
+                value("invsrccolor", int(D3DBLEND_INVSRCCOLOR)),
+                value("srcalpha", int(D3DBLEND_SRCALPHA)),
+                value("invsrcalpha", int(D3DBLEND_INVSRCALPHA)),
+                value("destalpha", int(D3DBLEND_DESTALPHA)),
+                value("invdestalpha", int(D3DBLEND_INVDESTALPHA)),
+                value("destcolor", int(D3DBLEND_DESTCOLOR)),
+                value("invdestcolor", int(D3DBLEND_INVDESTCOLOR)),
+                value("srcalphasat", int(D3DBLEND_SRCALPHASAT))
+            ],
 
             class_<adopt_cmp_func>("cmp_func")
-                .enum_("cmp_func")[value("never", int(D3DCMP_NEVER)), value("less", int(D3DCMP_LESS)),
-                    value("equal", int(D3DCMP_EQUAL)), value("lessequal", int(D3DCMP_LESSEQUAL)),
-                    value("greater", int(D3DCMP_GREATER)), value("notequal", int(D3DCMP_NOTEQUAL)),
-                    value("greaterequal", int(D3DCMP_GREATEREQUAL)), value("always", int(D3DCMP_ALWAYS))],
+            .enum_("cmp_func")
+            [
+                value("never", int(D3DCMP_NEVER)),
+                value("less", int(D3DCMP_LESS)),
+                value("equal", int(D3DCMP_EQUAL)),
+                value("lessequal", int(D3DCMP_LESSEQUAL)),
+                value("greater", int(D3DCMP_GREATER)),
+                value("notequal", int(D3DCMP_NOTEQUAL)),
+                value("greaterequal", int(D3DCMP_GREATEREQUAL)),
+                value("always", int(D3DCMP_ALWAYS))
+            ],
 
             class_<adopt_stencil_op>("stencil_op")
-                .enum_("stencil_op")[value("keep", int(D3DSTENCILOP_KEEP)), value("zero", int(D3DSTENCILOP_ZERO)),
-                    value("replace", int(D3DSTENCILOP_REPLACE)), value("incrsat", int(D3DSTENCILOP_INCRSAT)),
-                    value("decrsat", int(D3DSTENCILOP_DECRSAT)), value("invert", int(D3DSTENCILOP_INVERT)),
-                    value("incr", int(D3DSTENCILOP_INCR)), value("decr", int(D3DSTENCILOP_DECR))]];
+            .enum_("stencil_op")
+            [
+                value("keep", int(D3DSTENCILOP_KEEP)),
+                value("zero", int(D3DSTENCILOP_ZERO)),
+                value("replace", int(D3DSTENCILOP_REPLACE)),
+                value("incrsat", int(D3DSTENCILOP_INCRSAT)),
+                value("decrsat", int(D3DSTENCILOP_DECRSAT)),
+                value("invert", int(D3DSTENCILOP_INVERT)),
+                value("incr", int(D3DSTENCILOP_INCR)),
+                value("decr", int(D3DSTENCILOP_DECR))
+            ]
+        ];
     };
     ScriptEngine.init(exporterFunc, false);
     // load shaders

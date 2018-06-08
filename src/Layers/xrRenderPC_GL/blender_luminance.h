@@ -3,11 +3,10 @@
 class CBlender_luminance : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: luminance estimate"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: luminance estimate"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     CBlender_luminance();
     virtual ~CBlender_luminance();

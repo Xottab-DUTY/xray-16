@@ -229,7 +229,8 @@ public:
 
         if (stage < CTexture::rstGeometry)
             return textures_vs[stage - CTexture::rstVertex];
-#ifdef USE_DX10
+
+#if defined(USE_DX10) || defined(USE_OGL)
         return textures_gs[stage - CTexture::rstGeometry];
 #elif USE_DX11
         if (stage < CTexture::rstHull)

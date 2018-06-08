@@ -119,7 +119,7 @@ public:
     void StageEnd();
 
 // R1/R2-compiler	[programmable]
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11)  || defined(USE_OGL)
     void i_dx10Address(u32 s, u32 address);
     void i_dx10Filter_Min(u32 s, u32 f);
     void i_dx10Filter_Mip(u32 s, u32 f);
@@ -159,7 +159,7 @@ public:
     void r_CullMode(D3DCULL Mode);
 #endif
 
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11)  || defined(USE_OGL)
     void r_dx10Texture(LPCSTR ResourceName, LPCSTR texture);
     void r_dx10Texture(LPCSTR ResourceName, shared_str texture)
     {

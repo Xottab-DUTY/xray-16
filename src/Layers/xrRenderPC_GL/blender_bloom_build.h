@@ -3,11 +3,10 @@
 class CBlender_bloom_build : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: combine to bloom target"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     CBlender_bloom_build();
     virtual ~CBlender_bloom_build();
@@ -16,11 +15,10 @@ public:
 class CBlender_bloom_build_msaa : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: combine to bloom target msaa"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target msaa"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     CBlender_bloom_build_msaa();
     virtual ~CBlender_bloom_build_msaa();
@@ -29,11 +27,10 @@ public:
 class CBlender_postprocess_msaa : public IBlender
 {
 public:
-    LPCSTR getComment() override { return "INTERNAL: combine to bloom target msaa"; }
-    BOOL canBeDetailed() override { return FALSE; }
-    BOOL canBeLMAPped() override { return FALSE; }
-
-    void Compile(CBlender_Compile& C) override;
+    virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target msaa"; }
+    virtual BOOL canBeDetailed() { return FALSE; }
+    virtual BOOL canBeLMAPped() { return FALSE; }
+    virtual void Compile(CBlender_Compile& C);
 
     CBlender_postprocess_msaa();
     virtual ~CBlender_postprocess_msaa();

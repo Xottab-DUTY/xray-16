@@ -59,7 +59,7 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
         return 0;
 #else
 //	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11) || defined(USE_OGL)
     if (I == m_blenders.end())
     {
         Msg("DX10: Shader '%s' not found in library.", Name);
@@ -188,7 +188,6 @@ Shader* CResourceManager::_cpp_Create(
     C.bEditor = FALSE;
     C.bDetail = FALSE;
 #ifdef _EDITOR
-<<<<<<< HEAD
     if (!C.BT)
     {
         ELog.Msg(mtError, "Can't find shader '%s'", s_shader);
@@ -277,7 +276,7 @@ Shader* CResourceManager::_cpp_Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR
     if (!GEnv.isDedicatedServer)
     {
 //	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11) || defined(USE_OGL)
         IBlender* pBlender = _GetBlender(s_shader ? s_shader : "null");
         if (!pBlender)
             return nullptr;
@@ -303,7 +302,7 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_co
     if (!GEnv.isDedicatedServer)
     {
 //	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
+#if defined(USE_DX10) || defined(USE_DX11) || defined(USE_OGL)
         if (_lua_HasShader(s_shader))
             return _lua_Create(s_shader, s_textures);
         else
