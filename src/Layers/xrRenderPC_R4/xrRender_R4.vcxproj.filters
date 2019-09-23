@@ -717,6 +717,9 @@
     <ClInclude Include="..\xrRender\FSkinnedTypes.h">
       <Filter>Models\Visuals</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\r_rendertarget_phase.h">
+      <Filter>Core_Target</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

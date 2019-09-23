@@ -299,6 +299,7 @@
     <ClInclude Include="..\xrRender\r_constants.h" />
     <ClInclude Include="..\xrRender\r_constants_cache.h" />
     <ClInclude Include="..\xrRender\R_DStreams.h" />
+    <ClInclude Include="..\xrRender\r_rendertarget_phase.h" />
     <ClInclude Include="..\xrRender\r_sun_cascades.h" />
     <ClInclude Include="..\xrRender\r__dsgraph_types.h" />
     <ClInclude Include="..\xrRender\r__occlusion.h" />
