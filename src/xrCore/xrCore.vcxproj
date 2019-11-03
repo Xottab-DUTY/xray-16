@@ -108,7 +108,7 @@
       <WarningLevel>Level1</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libittnotify.lib;PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>where /q git
@@ -141,7 +141,7 @@ if not exist "$(OutDir)tbbmalloc_proxy_debug.dll" copy /y "$(xrSdkDir)binaries\$
       <WarningLevel>Level1</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libittnotify.lib;PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>where /q git
@@ -175,7 +175,7 @@ if not exist "$(OutDir)tbbmalloc_proxy_debug.dll" copy /y "$(xrSdkDir)binaries\$
       <WarningLevel>Level1</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libittnotify.lib;PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>where /q git
@@ -208,7 +208,7 @@ if not exist "$(OutDir)tbbmalloc_proxy.dll" copy /y "$(xrSdkDir)binaries\$(Platf
       <WarningLevel>Level1</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libittnotify.lib;PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>where /q git
@@ -241,7 +241,7 @@ if not exist "$(OutDir)tbbmalloc_proxy.dll" copy /y "$(xrSdkDir)binaries\$(Platf
       <WarningLevel>Level1</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libittnotify.lib;PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>where /q git
@@ -274,7 +274,7 @@ if not exist "$(OutDir)tbbmalloc_proxy.dll" copy /y "$(xrSdkDir)binaries\$(Platf
       <WarningLevel>Level1</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libittnotify.lib;PowrProf.lib;DbgHelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>where /q git
@@ -341,6 +341,7 @@ if not exist "$(OutDir)tbbmalloc_proxy.dll" copy /y "$(xrSdkDir)binaries\$(Platf
     <ClCompile Include="Math\MathUtil.cpp" />
     <ClCompile Include="Media\Image.cpp" />
     <ClCompile Include="Memory\xrMemory_align.cpp" />
+    <ClCompile Include="Memory\xrProfiling.cpp" />
     <ClCompile Include="NET_utils.cpp" />
     <ClCompile Include="os_clipboard.cpp" />
     <ClCompile Include="PostProcess\PostProcess.cpp" />
@@ -455,8 +456,10 @@ if not exist "$(OutDir)tbbmalloc_proxy.dll" copy /y "$(xrSdkDir)binaries\$(Platf
     <ClInclude Include="Math\MathUtil.hpp" />
     <ClInclude Include="math_constants.h" />
     <ClInclude Include="Media\Image.hpp" />
+    <ClInclude Include="Memory\ittnotify.h" />
     <ClInclude Include="Memory\xalloc.h" />
     <ClInclude Include="Memory\xrMemory_align.h" />
+    <ClInclude Include="Memory\xrProfiling.h" />
     <ClInclude Include="net_utils.h" />
     <ClInclude Include="os_clipboard.h" />
     <ClInclude Include="PostProcess\PostProcess.hpp" />

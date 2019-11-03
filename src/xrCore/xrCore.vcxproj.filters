@@ -345,6 +345,9 @@
     <ClCompile Include="Threading\ThreadUtil.cpp">
       <Filter>Threading\Util</Filter>
     </ClCompile>
+    <ClCompile Include="Memory\xrProfiling.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -748,6 +751,12 @@
     </ClInclude>
     <ClInclude Include="Threading\ThreadUtil.h">
       <Filter>Threading\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\xrProfiling.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\ittnotify.h">
+      <Filter>Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

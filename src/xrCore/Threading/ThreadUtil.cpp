@@ -43,6 +43,7 @@ u32 __stdcall ThreadEntry(void* params)
 {
     SThreadStartupInfo* args = (SThreadStartupInfo*)params;
     SetThreadName(NULL, args->threadName);
+    Profiling.SetCurrentThreadName(args->threadName);
     EntryFuncType entry = args->entryFunc;
     void* arglist = args->argList;
     xr_delete(args);

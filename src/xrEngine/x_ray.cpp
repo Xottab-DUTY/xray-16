@@ -264,6 +264,7 @@ void CApplication::LoadBegin()
     ll_dwReference++;
     if (1 == ll_dwReference)
     {
+        Profiling.PauseProfiling();
         loaded = false;
 
         if (!GEnv.isDedicatedServer)
@@ -283,6 +284,7 @@ void CApplication::LoadEnd()
         Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
         Console->Execute("stat_memory");
         loaded = true;
+        Profiling.ResumeProfiling();
     }
 }
 

@@ -309,6 +309,10 @@ void xrCore::Initialize(pcstr _ApplicationName, pcstr commandLine, LogCallback c
 
         Memory._initialize();
 
+
+        Profiling.Initialize();
+        Profiling.PauseProfiling();
+
         SDL_LogSetOutputFunction(SDLLogOutput, nullptr);
         Msg("%s %s build %d, %s", "OpenXRay", GetBuildConfiguration(), buildId, buildDate);
         PrintBuildInfo();

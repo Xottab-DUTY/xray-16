@@ -170,10 +170,20 @@ void CRenderDevice::SecondaryThreadProc(void* context)
             device.syncThreadExit.Set();
             return;
         }
-        for (u32 pit = 0; pit < device.seqParallel.size(); pit++)
-            device.seqParallel[pit]();
-        device.seqParallel.clear();
-        device.seqFrameMT.Process();
+
+        {
+            xrProfilingTask seqParallelTask("Secondary Thread: seqParallel");
+            for (u32 pit = 0; pit < device.seqParallel.size(); pit++)
+                device.seqParallel[pit]();
+
+            device.seqParallel.clear();
+        }
+
+        {
+            xrProfilingTask seqFrameMTTask("Secondary Thread: seqParallel");
+            device.seqFrameMT.Process();
+        }
+
         device.syncFrameDone.Set();
     }
 }
@@ -317,16 +327,23 @@ void CRenderDevice::ProcessFrame()
 
     const u64 frameStartTime = TimerGlobal.GetElapsed_ms();
 
-    GEnv.Render->BeforeFrame();
-    FrameMove();
+    Profiling.StartFrame(xrProfiling::eEngineFrame::Main);
+    {
+        xrProfilingTask frame("Frame");
+        GEnv.Render->BeforeFrame();
+        FrameMove();
+    }
 
-    BeforeRender();
+    {
+        xrProfilingTask render("Render");
+        BeforeRender();
 
-    // renderProcessFrame.Set(); // allow render thread to do its job
-    syncProcessFrame.Set(); // allow secondary thread to do its job
-    //mtProcessingAllowed = true;
+        // renderProcessFrame.Set(); // allow render thread to do its job
+        syncProcessFrame.Set(); // allow secondary thread to do its job
+        //mtProcessingAllowed = true;
 
-    DoRender();
+        DoRender();
+    }
 
     const u64 frameEndTime = TimerGlobal.GetElapsed_ms();
     const u64 frameTime = frameEndTime - frameStartTime;
@@ -347,6 +364,8 @@ void CRenderDevice::ProcessFrame()
     //while (!TaskScheduler->TaskQueueIsEmpty())
     //    std::this_thread::yield();
     //mtProcessingAllowed = false;
+
+    Profiling.EndFrame(xrProfiling::eEngineFrame::Main);
 
     if (!b_is_Active)
         Sleep(1);
@@ -479,6 +498,7 @@ void CRenderDevice::Run()
     OnWM_Activate(1, 0);
 
     // Message cycle
+    Profiling.ResumeProfiling();
     message_loop();
 
     // Stop Balance-Thread

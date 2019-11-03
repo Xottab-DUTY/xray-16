@@ -66,12 +66,15 @@ void TaskManagerBase::taskManagerThread(void* thisPtr)
             continue;
         }
 
-        for (Task* task : self.tasks)
         {
-            if (task->CheckIfExecutionAllowed())
+            xrProfilingTask iterateAndSpawn("Task Manager: iterate and spawn");
+            for (Task* task : self.tasks)
             {
-                self.SpawnTask(task);
-                break; // Iterators are invalid now, we should break here
+                if (task->CheckIfExecutionAllowed())
+                {
+                    self.SpawnTask(task);
+                    break; // Iterators are invalid now, we should break here
+                }
             }
         }
         self.lock.Leave();
