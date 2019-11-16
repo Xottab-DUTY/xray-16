@@ -1,4 +1,20 @@
 #include "stdafx.h"
+#include "r4_rendertarget_phase_luminance.h"
+#include "Layers/xrRenderPC_R4/blender_luminance.h"
+
+CRenderTarget_Phase_Luminance::CRenderTarget_Phase_Luminance(CRenderTarget* target)
+    : IRender_Target_Phase(target), b_luminance(new CBlender_luminance()) {}
+
+CRenderTarget_Phase_Luminance::~CRenderTarget_Phase_Luminance()
+{
+    xr_delete(b_luminance);
+}
+
+void CRenderTarget_Phase_Luminance::Initialize()
+{
+    s_luminance.create(b_luminance, "r2" DELIMITER "luminance");
+    f_luminance_adapt = 0.5f;
+}
 
 #pragma pack(push, 4)
 struct v_build
@@ -17,7 +33,7 @@ struct v_filter
 };
 #pragma pack(pop)
 
-void CRenderTarget::phase_luminance()
+void CRenderTarget_Phase_Luminance::Execute()
 {
     u32 Offset = 0;
     //	float	eps		= EPS_S;

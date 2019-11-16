@@ -720,6 +720,12 @@
     <ClInclude Include="..\xrRender\r_rendertarget_phase.h">
       <Filter>Core_Target</Filter>
     </ClInclude>
+    <ClInclude Include="r4_rendertarget_phase_bloom.h">
+      <Filter>Core_Target</Filter>
+    </ClInclude>
+    <ClInclude Include="r4_rendertarget_phase_luminance.h">
+      <Filter>Core_Target</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

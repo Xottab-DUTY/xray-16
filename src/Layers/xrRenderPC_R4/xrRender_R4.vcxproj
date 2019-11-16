@@ -349,6 +349,8 @@
     <ClInclude Include="r2_types.h" />
     <ClInclude Include="r4.h" />
     <ClInclude Include="r4_rendertarget.h" />
+    <ClInclude Include="r4_rendertarget_phase_bloom.h" />
+    <ClInclude Include="r4_rendertarget_phase_luminance.h" />
     <ClInclude Include="r4_rendertarget_wallmarks.h" />
     <ClInclude Include="r4_R_sun_support.h" />
     <ClInclude Include="R_Backend_LOD.h" />

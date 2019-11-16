@@ -3,6 +3,7 @@
 #include "Layers/xrRender/ColorMapManager.h"
 
 class light;
+class IRender_Target_Phase;
 
 //#define DU_SPHERE_NUMVERTEX 92
 //#define DU_SPHERE_NUMFACES	180
@@ -33,11 +34,8 @@ public:
     IBlender* b_accum_point;
     IBlender* b_accum_spot;
     IBlender* b_accum_reflected;
-    IBlender* b_bloom;
-    IBlender* b_luminance;
     IBlender* b_combine;
     IBlender* b_postprocess_msaa;
-    IBlender* b_bloom_msaa;
     IBlender* b_combine_msaa[8];
     IBlender* b_accum_mask_msaa[8];
     IBlender* b_accum_spot_msaa[8];
@@ -86,8 +84,6 @@ public:
     ref_rt rt_Generic_1; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
     //	Igor: for volumetric lights
     ref_rt rt_Generic_2; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-    ref_rt rt_Bloom_1; // 32bit, dim/4	(r,g,b,?)
-    ref_rt rt_Bloom_2; // 32bit, dim/4	(r,g,b,?)
     ref_rt rt_LUM_64; // 64bit, 64x64,	log-average in all components
     ref_rt rt_LUM_8; // 64bit, 8x8,		log-average in all components
 
@@ -173,17 +169,10 @@ private:
     IndexStagingBuffer g_accum_volumetric_ib;
 
     // Bloom
-    ref_geom g_bloom_build;
-    ref_geom g_bloom_filter;
-    ref_shader s_bloom_dbg_1;
-    ref_shader s_bloom_dbg_2;
-    ref_shader s_bloom;
-    ref_shader s_bloom_msaa;
-    float f_bloom_factor;
+    IRender_Target_Phase* p_bloom;
 
     // Luminance
-    ref_shader s_luminance;
-    float f_luminance_adapt;
+    IRender_Target_Phase* p_luminance;
 
     // Combine
     ref_geom g_combine;

@@ -1,7 +1,48 @@
 #include "stdafx.h"
 
+#include "r4_rendertarget_phase_bloom.h"
+#include "Layers/xrRenderPC_R4/Blender_bloom_build.h"
+
 #include "xrEngine/IGame_Persistent.h"
 #include "xrEngine/Environment.h"
+
+CRenderTarget_Phase_Bloom::CRenderTarget_Phase_Bloom(CRenderTarget* target)
+    : IRender_Target_Phase(target), b_bloom(new CBlender_bloom_build())
+{
+    if (RImplementation.o.dx10_msaa)
+    {
+        b_bloom_msaa = new CBlender_bloom_build_msaa();
+    }
+}
+
+CRenderTarget_Phase_Bloom::~CRenderTarget_Phase_Bloom()
+{
+    xr_delete(b_bloom);
+    xr_delete(b_bloom_msaa);
+}
+
+void CRenderTarget_Phase_Bloom::Initialize()
+{
+    D3DFORMAT fmt = D3DFMT_A8R8G8B8; // D3DFMT_X8R8G8B8
+    u32 w = BLOOM_size_X, h = BLOOM_size_Y;
+    u32 fvf_build = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) |
+        D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
+    u32 fvf_filter = (u32)D3DFVF_XYZRHW | D3DFVF_TEX8 | D3DFVF_TEXCOORDSIZE4(0) | D3DFVF_TEXCOORDSIZE4(1) |
+        D3DFVF_TEXCOORDSIZE4(2) | D3DFVF_TEXCOORDSIZE4(3) | D3DFVF_TEXCOORDSIZE4(4) | D3DFVF_TEXCOORDSIZE4(5) |
+        D3DFVF_TEXCOORDSIZE4(6) | D3DFVF_TEXCOORDSIZE4(7);
+    rt_Bloom_1.create(r2_RT_bloom1, w, h, fmt);
+    rt_Bloom_2.create(r2_RT_bloom2, w, h, fmt);
+    g_bloom_build.create(fvf_build, RCache.Vertex.Buffer(), RCache.QuadIB);
+    g_bloom_filter.create(fvf_filter, RCache.Vertex.Buffer(), RCache.QuadIB);
+    s_bloom_dbg_1.create("effects" DELIMITER "screen_set", r2_RT_bloom1);
+    s_bloom_dbg_2.create("effects" DELIMITER "screen_set", r2_RT_bloom2);
+    s_bloom.create(b_bloom, "r2" DELIMITER "bloom");
+    if (RImplementation.o.dx10_msaa)
+    {
+        s_bloom_msaa.create(b_bloom_msaa, "r2" DELIMITER "bloom");
+    }
+    f_bloom_factor = 0.5f;
+}
 
 #pragma pack(push, 4)
 struct v_build
@@ -65,13 +106,13 @@ void CalcGauss_wave(Fvector4& w0, // weight
     w1.add(t1);
 }
 
-void CRenderTarget::phase_bloom()
+void CRenderTarget_Phase_Bloom::Execute()
 {
     PIX_EVENT(phase_bloom);
     u32 Offset;
 
     // Targets
-    u_setrt(rt_Bloom_1, NULL, NULL, NULL); // No need for ZBuffer at all
+    RImplementation.Target->u_setrt(rt_Bloom_1, NULL, NULL, NULL); // No need for ZBuffer at all
     // RImplementation.rmNormal();
 
     // Clear	- don't clear - it's stupid here :)
@@ -187,12 +228,12 @@ void CRenderTarget::phase_bloom()
         RCache.set_Geometry(g_bloom_build);
 
         // P0
-        u_setrt(rt_Bloom_2, NULL, NULL, NULL); // No need for ZBuffer at all
+        RImplementation.Target->u_setrt(rt_Bloom_2, NULL, NULL, NULL); // No need for ZBuffer at all
         RCache.set_Element(s_bloom->E[3]);
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
         // P1
-        u_setrt(rt_Bloom_1, NULL, NULL, NULL); // No need for ZBuffer at all
+        RImplementation.Target->u_setrt(rt_Bloom_1, NULL, NULL, NULL); // No need for ZBuffer at all
         RCache.set_Element(s_bloom->E[4]);
         RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
@@ -271,7 +312,7 @@ void CRenderTarget::phase_bloom()
             Fvector4 w0, w1;
             float kernel = ps_r2_ls_bloom_kernel_g;
             CalcGauss_wave(w0, w1, kernel, kernel / 3.f, ps_r2_ls_bloom_kernel_scale);
-            u_setrt(rt_Bloom_2, NULL, NULL, NULL); // No need for ZBuffer at all
+            RImplementation.Target->u_setrt(rt_Bloom_2, NULL, NULL, NULL); // No need for ZBuffer at all
             RCache.set_Element(s_bloom->E[1]);
             RCache.set_ca("weight", 0, w0);
             RCache.set_ca("weight", 1, w1);
@@ -351,7 +392,7 @@ void CRenderTarget::phase_bloom()
             Fvector4 w0, w1;
             float kernel = ps_r2_ls_bloom_kernel_g * float(Device.dwHeight) / float(Device.dwWidth);
             CalcGauss_wave(w0, w1, kernel, kernel / 3.f, ps_r2_ls_bloom_kernel_scale);
-            u_setrt(rt_Bloom_1, NULL, NULL, NULL); // No need for ZBuffer at all
+            RImplementation.Target->u_setrt(rt_Bloom_1, NULL, NULL, NULL); // No need for ZBuffer at all
             RCache.set_Element(s_bloom->E[2]);
             RCache.set_ca("weight", 0, w0);
             RCache.set_ca("weight", 1, w1);

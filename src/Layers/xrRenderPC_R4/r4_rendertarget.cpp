@@ -10,6 +10,8 @@
 #include "blender_bloom_build.h"
 #include "blender_luminance.h"
 #include "blender_ssao.h"
+#include "r4_rendertarget_phase_bloom.h"
+#include "r4_rendertarget_phase_luminance.h"
 #include "dx11MinMaxSMBlender.h"
 #include "dx11HDAOCSBlender.h"
 #include "Layers/xrRenderDX10/msaa/dx10MSAABlender.h"
@@ -312,13 +314,13 @@ CRenderTarget::CRenderTarget()
     b_accum_point = xr_new<CBlender_accum_point>();
     b_accum_spot = xr_new<CBlender_accum_spot>();
     b_accum_reflected = xr_new<CBlender_accum_reflected>();
-    b_bloom = xr_new<CBlender_bloom_build>();
+    p_bloom = xr_new<CRenderTarget_Phase_Bloom>();
     if (RImplementation.o.dx10_msaa)
     {
         b_bloom_msaa = xr_new<CBlender_bloom_build_msaa>();
         b_postprocess_msaa = xr_new<CBlender_postprocess_msaa>();
     }
-    b_luminance = xr_new<CBlender_luminance>();
+    p_luminance = xr_new<CRenderTarget_Phase_Luminance>();
     b_combine = xr_new<CBlender_combine>();
     b_ssao = xr_new<CBlender_SSAO_noMSAA>();
 
@@ -593,34 +595,15 @@ CRenderTarget::CRenderTarget()
     }
 
     // BLOOM
-    {
-        D3DFORMAT fmt = D3DFMT_A8R8G8B8; //;		// D3DFMT_X8R8G8B8
-        u32 w = BLOOM_size_X, h = BLOOM_size_Y;
-        u32 fvf_build = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) |
-            D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
-        u32 fvf_filter = (u32)D3DFVF_XYZRHW | D3DFVF_TEX8 | D3DFVF_TEXCOORDSIZE4(0) | D3DFVF_TEXCOORDSIZE4(1) |
-            D3DFVF_TEXCOORDSIZE4(2) | D3DFVF_TEXCOORDSIZE4(3) | D3DFVF_TEXCOORDSIZE4(4) | D3DFVF_TEXCOORDSIZE4(5) |
-            D3DFVF_TEXCOORDSIZE4(6) | D3DFVF_TEXCOORDSIZE4(7);
-        rt_Bloom_1.create(r2_RT_bloom1, w, h, fmt);
-        rt_Bloom_2.create(r2_RT_bloom2, w, h, fmt);
-        g_bloom_build.create(fvf_build, RCache.Vertex.Buffer(), RCache.QuadIB);
-        g_bloom_filter.create(fvf_filter, RCache.Vertex.Buffer(), RCache.QuadIB);
-        s_bloom_dbg_1.create("effects" DELIMITER "screen_set", r2_RT_bloom1);
-        s_bloom_dbg_2.create("effects" DELIMITER "screen_set", r2_RT_bloom2);
-        s_bloom.create(b_bloom, "r2" DELIMITER "bloom");
-        if (RImplementation.o.dx10_msaa)
-        {
-            s_bloom_msaa.create(b_bloom_msaa, "r2" DELIMITER "bloom");
-        }
-        f_bloom_factor = 0.5f;
-    }
+    p_bloom->Initialize();
+
+    // LUMINANCE
+    p_luminance->Initialize();
 
     // TONEMAP
     {
         rt_LUM_64.create(r2_RT_luminance_t64, 64, 64, D3DFMT_A16B16G16R16F);
         rt_LUM_8.create(r2_RT_luminance_t8, 8, 8, D3DFMT_A16B16G16R16F);
-        s_luminance.create(b_luminance, "r2" DELIMITER "luminance");
-        f_luminance_adapt = 0.5f;
 
         t_LUM_src.create(r2_RT_luminance_src);
         t_LUM_dest.create(r2_RT_luminance_cur);
@@ -1068,10 +1051,12 @@ CRenderTarget::~CRenderTarget()
     accum_point_geom_destroy();
     accum_volumetric_geom_destroy();
 
+    // Phases
+    xr_delete(p_bloom);
+    xr_delete(p_luminance);
+
     // Blenders
     xr_delete(b_combine);
-    xr_delete(b_luminance);
-    xr_delete(b_bloom);
     xr_delete(b_accum_reflected);
     xr_delete(b_accum_spot);
     xr_delete(b_accum_point);
