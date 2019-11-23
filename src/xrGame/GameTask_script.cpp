@@ -3,6 +3,7 @@
 #include "xrScriptEngine/ScriptExporter.hpp"
 
 using namespace luabind;
+using namespace luabind::policy;
 
 SCRIPT_EXPORT(CGameTask, (),
 {
@@ -27,11 +28,15 @@ SCRIPT_EXPORT(CGameTask, (),
 
         class_<SGameTaskObjective>("SGameTaskObjective")
             .def(constructor<CGameTask*, int>())
+
             .def("get_title", &SGameTaskObjective::GetTitle_script)
             .def("set_title", &SGameTaskObjective::SetTitle_script)
                 
             .def("get_description", &SGameTaskObjective::GetDescription_script)
             .def("set_description", &SGameTaskObjective::SetDescription_script)
+
+            .def("set_article_id", &CGameTask::SetArticleID_script)
+            .def("set_article_key", &CGameTask::SetArticleKey_script)
 
             .def("get_icon_name", &SGameTaskObjective::GetIconName_script)
             .def("set_icon_name", &SGameTaskObjective::SetIconName_script)
@@ -44,6 +49,7 @@ SCRIPT_EXPORT(CGameTask, (),
             .def("set_map_hint", &SGameTaskObjective::SetMapHint_script)
             .def("set_map_location", &SGameTaskObjective::SetMapLocation_script)
             .def("set_map_object_id", &SGameTaskObjective::SetMapObjectID_script)
+            .def_readwrite("def_ml_enabled", &CGameTask::m_def_location_enabled)
 
             .def("remove_map_locations", &SGameTaskObjective::RemoveMapLocations)
             .def("change_map_location", &SGameTaskObjective::ChangeMapLocation)
@@ -62,10 +68,17 @@ SCRIPT_EXPORT(CGameTask, (),
 
         class_<CGameTask, SGameTaskObjective>("CGameTask")
             .def(constructor<>())
+            .def("load", &CGameTask::Load_script)
+
             .def("get_id", &CGameTask::GetID_script)
             .def("set_id", &CGameTask::SetID_script)
 
             .def("get_priority", &CGameTask::GetPriority_script)
             .def("set_priority", &CGameTask::SetPriority_script)
+
+            .def("add_objective", &CGameTask::AddObjective_script, adopt<2>())
+            .def("get_objective", &CGameTask::GetObjective_script)
+
+            .def("get_objectives_cnt", &CGameTask::GetObjectiveSize_script)
     ];
 });

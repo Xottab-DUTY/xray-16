@@ -36,6 +36,7 @@ public:
 class SGameTaskObjective : public ISerializable
 {
     friend struct SGameTaskKey;
+    friend class CGameTask;
     friend class CGameTaskManager;
 
 protected:
@@ -49,13 +50,19 @@ public:
     shared_str m_Title;
     shared_str m_Description;
 
+    // encyclopedia
+    shared_str m_article_id;
+    shared_str m_article_key;
+
     // icon
+    Frect m_icon_rect;
     shared_str m_icon_texture_name;
 
     // map
     shared_str m_map_hint;
     shared_str m_map_location;
     u16 m_map_object_id{};
+    bool m_def_location_enabled{};
     CMapLocation* m_linked_map_location{};
 
     // timing
@@ -88,7 +95,7 @@ public:
     auto GetTaskState() const { return m_task_state; }
 
     auto GetTaskType() const { return m_task_type; }
-    auto LinkedMapLocation() const { return m_linked_map_location; }
+    virtual CMapLocation* LinkedMapLocation() { return m_linked_map_location; }
 
     ETaskState UpdateState();
 
@@ -121,8 +128,13 @@ public:
     auto GetDescription_script() const { return m_Description.c_str(); }
     void SetDescription_script(pcstr desc) { m_Description = desc; }
 
+    // encyclopedia
+    void SetArticleID_script(cpcstr id) { m_article_id = id; }
+    void SetArticleKey_script(cpcstr key) { m_article_key = key; }
+
+    // icon
     auto GetIconName_script() const { return m_icon_texture_name.c_str(); }
-    void SetIconName_script(pcstr tex) { m_icon_texture_name = tex; }
+    void SetIconName_script(pcstr tex);
 
     // map
     void SetMapHint_script(pcstr hint) { m_map_hint = hint; }
@@ -145,28 +157,47 @@ public:
     void CommitScriptHelperContents();
 };
 
+using OBJECTIVES_VECTOR = xr_vector<SGameTaskObjective>;
+
 class CGameTask : public SGameTaskObjective, public Noncopyable
 {
 public:
     TASK_ID m_ID;
+    TASK_OBJECTIVE_ID m_active_objective{ NO_TASK_OBJECTIVE };
     u32 m_priority{};
     bool m_read{};
+    OBJECTIVES_VECTOR m_Objectives;
 
 public:
     CGameTask();
+
+    void Load(const TASK_ID& id);
 
     void save(IWriter& stream) override;
     void load(IReader& stream) override;
 
     void ChangeStateCallback() override;
 
+    SGameTaskObjective& ActiveObjective();
+    SGameTaskObjective& Objective(size_t idx) { return m_Objectives[idx]; }
+
     // map
     void OnArrived();
+    CMapLocation* LinkedMapLocation() override;
 
     // for scripting access
+    void Load_script(pcstr id) { Load(id); }
+
     auto GetID_script() const { return m_ID.c_str(); }
     void SetID_script(pcstr id) { m_ID = id; }
 
     auto GetPriority_script() const { return m_priority; }
     void SetPriority_script(int prio) { m_priority = prio; }
+
+    void AddObjective_script(SGameTaskObjective* O);
+
+    SGameTaskObjective* GetObjective_script(int objective_id) { return &Objective(objective_id); }
+
+	auto GetObjectiveSize_script() const { return m_Objectives.size(); }
+
 };
