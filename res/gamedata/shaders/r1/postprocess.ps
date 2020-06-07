@@ -1,0 +1,28 @@
+#include "common.h"
+#include "common_iostructs.h"
+
+uniform sampler2D 	s_base0;
+uniform sampler2D 	s_base1;
+uniform sampler2D 	s_noise;
+uniform half4 		c_brightness;
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+half4 	main_ps_1_1	( p_postpr I )	: COLOR
+{
+	half3	t_0 	= tex2D		(s_base0,I.Tex0);
+	half3	t_1 	= tex2D		(s_base1,I.Tex1);	
+	half3 	image	= (t_0+t_1)*.5;					// add_d2
+	half	gray 	= dot		(image,I.Gray);			// dp3
+			image 	= lerp 		(gray,image,I.Gray.w);		// mul/mad
+
+	half4	t_noise	= tex2D		(s_noise,I.Tex2);	
+	half3 	noised 	= image*t_noise*2;                     		// mul_2x
+			image	= lerp 		(noised,image,I.Color.w); 	// lrp ?
+			image	= (image * I.Color + c_brightness)*2;		// mad
+//			image	= (image + c_brightness) * I.color;		// mad ?
+
+	// out
+	//return  half4	(image.r,0,0,1);					// +mov
+	return  half4	(image,1);					// +mov
+}
