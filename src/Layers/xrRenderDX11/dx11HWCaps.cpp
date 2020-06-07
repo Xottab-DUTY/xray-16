@@ -5,7 +5,7 @@
 #include "dx11HW.h"
 
 #if !defined(_EDITOR)
-#include <nvapi.h>
+#include <nvapi/nvapi.h>
 #include <ags_lib/inc/amd_ags.h>
 #endif
 
@@ -146,6 +146,17 @@ void CHWCaps::Update()
     // ***************** GEOMETRY
     switch (HW.FeatureLevel)
     {
+    case D3D_FEATURE_LEVEL_9_1:
+    case D3D_FEATURE_LEVEL_9_2:
+        geometry_profile = "vs_4_0_level_9_1";
+        geometry_major = 2; // XXX: not sure if it should 2, 3 or 4
+        geometry_minor = 0;
+        break;
+    case D3D_FEATURE_LEVEL_9_3:
+        geometry_profile = "vs_4_0_level_9_3";
+        geometry_major = 2; // XXX: not sure if it should 2, 3 or 4
+        geometry_minor = 0;
+        break;
     case D3D_FEATURE_LEVEL_10_0:
         geometry_profile = "vs_4_0";
         geometry_major = 4;
@@ -176,11 +187,22 @@ void CHWCaps::Update()
     geometry.dwRegisters = cnt;
     geometry.dwInstructions = 256;
     geometry.dwClipPlanes = _min(6, 15);
-    geometry.bVTF = TRUE;
+    geometry.bVTF = HW.FeatureLevel > D3D_FEATURE_LEVEL_9_3;
 
     // ***************** PIXEL processing
     switch (HW.FeatureLevel)
     {
+    case D3D_FEATURE_LEVEL_9_1:
+    case D3D_FEATURE_LEVEL_9_2:
+        raster_profile = "ps_4_0_level_9_1";
+        raster_major = 2; // XXX: not sure if it should 2, 3 or 4
+        raster_minor = 0;
+        break;
+    case D3D_FEATURE_LEVEL_9_3:
+        raster_profile = "ps_4_0_level_9_3";
+        raster_major = 2; // XXX: not sure if it should 2, 3 or 4
+        raster_minor = 0;
+        break;
     case D3D_FEATURE_LEVEL_10_0:
         raster_profile = "ps_4_0";
         raster_major = 4;

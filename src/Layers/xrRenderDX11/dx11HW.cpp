@@ -102,6 +102,7 @@ void CHW::CreateDevice(SDL_Window* sdlWnd)
 
     D3D_FEATURE_LEVEL featureLevels[] =
     {
+#if 1 // RENDER != R_R1
 #ifdef HAS_DX11_3
         D3D_FEATURE_LEVEL_12_1,
         D3D_FEATURE_LEVEL_12_0,
@@ -110,6 +111,11 @@ void CHW::CreateDevice(SDL_Window* sdlWnd)
         D3D_FEATURE_LEVEL_11_0,
         D3D_FEATURE_LEVEL_10_1,
         D3D_FEATURE_LEVEL_10_0
+#else
+        D3D_FEATURE_LEVEL_9_3,
+        D3D_FEATURE_LEVEL_9_2,
+        D3D_FEATURE_LEVEL_9_1,
+#endif
     };
 
     D3D_FEATURE_LEVEL featureLevels2[] =

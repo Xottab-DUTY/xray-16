@@ -442,17 +442,17 @@ public:
     IC void SetViewport(const D3D_VIEWPORT& viewport) const;
 
     // constants
-    ICF ref_constant get_c(LPCSTR n)
+    ICF ref_constant get_c(LPCSTR n, u16 type = u16(-1))
     {
         if (ctable)
-            return ctable->get(n);
+            return ctable->get(n, type);
         return nullptr;
     }
 
-    ICF ref_constant get_c(const shared_str& n)
+    ICF ref_constant get_c(const shared_str& n, u16 type = u16(-1))
     {
         if (ctable)
-            return ctable->get(n);
+            return ctable->get(n, type);
         return nullptr;
     }
 

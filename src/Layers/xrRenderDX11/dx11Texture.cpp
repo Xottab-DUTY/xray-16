@@ -420,6 +420,17 @@ _DDS_2D:
     LoadInfo.Width = IMG.Width;
     LoadInfo.Height = IMG.Height;
 
+    UINT required = D3D_FORMAT_SUPPORT_TEXTURE2D | D3D11_FORMAT_SUPPORT_MIP;
+
+    if (!HW.CheckFormatSupport(IMG.Format, required))
+    {
+        LoadInfo.MipLevels = 1;
+    }
+    else
+    {
+        LoadInfo.MipLevels = IMG.MipLevels;
+    }
+
     // x64 crash workaround
 #ifdef XR_ARCHITECTURE_X64
     LoadInfo.FirstMipLevel = img_loaded_lod;

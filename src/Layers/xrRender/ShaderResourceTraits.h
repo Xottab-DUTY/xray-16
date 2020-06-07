@@ -701,6 +701,9 @@ T* CResourceManager::CreateShader(cpcstr name, pcstr filename /*= nullptr*/, u32
         flags |= D3DXSHADER_PACKMATRIX_ROWMAJOR | (xrDebug::DebuggerIsPresent() ? D3DXSHADER_DEBUG : 0);
 #   endif
 #elif defined(USE_DX11)
+#   if RENDER == R_R1
+        flags |= D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;
+#   endif
 #   ifdef NDEBUG
         flags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #   else

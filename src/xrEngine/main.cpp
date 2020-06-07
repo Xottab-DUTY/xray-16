@@ -229,6 +229,8 @@ void CheckAndSetupRenderer()
         Console->Execute("renderer renderer_r2a");
     else if (strstr(Core.Params, "-r2"))
         Console->Execute("renderer renderer_r2");
+    else if (strstr(Core.Params, "-r11"))
+        Console->Execute("renderer renderer_r11");
     else if (strstr(Core.Params, "-r1"))
         Console->Execute("renderer renderer_r1");
     else
