@@ -5,7 +5,7 @@
 #include "dx10HW.h"
 
 #if !defined(_EDITOR)
-#include <nvapi.h>
+#include <nvapi/nvapi.h>
 #include <ags_lib/inc/amd_ags.h>
 #endif
 
@@ -154,7 +154,7 @@ void CHWCaps::Update()
     geometry.dwRegisters = cnt;
     geometry.dwInstructions = 256;
     geometry.dwClipPlanes = _min(6, 15);
-    geometry.bVTF = TRUE;
+    geometry.bVTF = HW.FeatureLevel > D3D_FEATURE_LEVEL_9_3;
 
     // ***************** PIXEL processing
     raster_major = 4;

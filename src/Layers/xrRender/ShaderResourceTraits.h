@@ -96,6 +96,11 @@ struct ShaderTypeTraits<SVS>
 #elif !defined(USE_DX9) && !defined(USE_OGL)
         switch (HW.FeatureLevel)
         {
+        case D3D_FEATURE_LEVEL_9_1:
+        case D3D_FEATURE_LEVEL_9_2:
+            return "vs_4_0_level_9_1";
+        case D3D_FEATURE_LEVEL_9_3:
+            return "vs_4_0_level_9_3";
         case D3D_FEATURE_LEVEL_10_0:
             return "vs_4_0";
         case D3D_FEATURE_LEVEL_10_1:
@@ -189,6 +194,11 @@ struct ShaderTypeTraits<SPS>
 #elif !defined(USE_DX9) && !defined(USE_OGL)
         switch (HW.FeatureLevel)
         {
+        case D3D_FEATURE_LEVEL_9_1:
+        case D3D_FEATURE_LEVEL_9_2:
+            return "ps_4_0_level_9_1";
+        case D3D_FEATURE_LEVEL_9_3:
+            return "ps_4_0_level_9_3";
         case D3D_FEATURE_LEVEL_10_0:
             return "ps_4_0";
         case D3D_FEATURE_LEVEL_10_1:
@@ -633,6 +643,9 @@ T* CResourceManager::CreateShader(cpcstr name, pcstr filename /*= nullptr*/,
         ShaderTypeTraits<T>::GetCompilationTarget(c_target, c_entry, data);
 
 #if !defined(USE_DX9) && !defined(USE_OGL)
+#   if RENDER == R_R1
+        flags |= D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;
+#   endif
 #   ifdef NDEBUG
         flags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #   else
