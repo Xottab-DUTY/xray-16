@@ -423,7 +423,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
     if (dik == SDL_SCANCODE_ESCAPE)
         fLifeTime = -1;
 
-#ifndef MASTER_GOLD
+#if 1//ndef MASTER_GOLD
     if (dik == SDL_SCANCODE_RETURN)
     {
         IGameObject* entity = g_pGameLevel->CurrentEntity();

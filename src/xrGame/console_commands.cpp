@@ -1244,7 +1244,7 @@ public:
 */
 #endif
 
-#ifndef MASTER_GOLD
+#if 1//ndef MASTER_GOLD
 #include "xrAICore/Navigation/game_graph.h"
 struct CCC_JumpToLevel : public IConsole_Command
 {
@@ -2077,7 +2077,7 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "g_no_clip", &psActorFlags, AF_NO_CLIP);
 #endif // DEBUG
 
-#ifndef MASTER_GOLD
+#if 1//ndef MASTER_GOLD
     CMD1(CCC_JumpToLevel, "jump_to_level");
     CMD3(CCC_Mask, "g_god", &psActorFlags, AF_GODMODE);
     CMD3(CCC_Mask, "g_unlimitedammo", &psActorFlags, AF_UNLIMITEDAMMO);
