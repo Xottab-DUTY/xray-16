@@ -5,6 +5,17 @@
 using namespace luabind;
 using namespace luabind::policy;
 
+void CGameTask::AddObjective_script(SGameTaskObjective* O)
+{
+    O->CommitScriptHelperContents();
+    m_Objectives.emplace_back(*O);
+}
+
+SGameTaskObjective* CGameTask::GetObjective_script(TASK_OBJECTIVE_ID objective_id)
+{
+    return &Objective(objective_id);
+}
+
 SCRIPT_EXPORT(CGameTask, (),
 {
     class EnumTaskState {};
@@ -28,6 +39,7 @@ SCRIPT_EXPORT(CGameTask, (),
 
         class_<SGameTaskObjective>("SGameTaskObjective")
             .def(constructor<CGameTask*, int>())
+            .def("get_idx", &SGameTaskObjective::GetID)
 
             .def("get_title", &SGameTaskObjective::GetTitle_script)
             .def("set_title", &SGameTaskObjective::SetTitle_script)
@@ -79,6 +91,6 @@ SCRIPT_EXPORT(CGameTask, (),
             .def("add_objective", &CGameTask::AddObjective_script, adopt<2>())
             .def("get_objective", &CGameTask::GetObjective_script)
 
-            .def("get_objectives_cnt", &CGameTask::GetObjectiveSize_script)
+            .def("get_objectives_cnt", &CGameTask::GetObjectivesCount)
     ];
 });

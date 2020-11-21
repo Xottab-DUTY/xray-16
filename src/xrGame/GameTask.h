@@ -46,7 +46,7 @@ protected:
     SScriptTaskHelper m_pScriptHelper;
 
 public:
-    int m_idx{};
+    TASK_OBJECTIVE_ID m_idx;
     shared_str m_Title;
     shared_str m_Description;
 
@@ -86,8 +86,7 @@ private:
     task_state_functors m_lua_functions_on_fail;
 
 public:
-    SGameTaskObjective();
-    SGameTaskObjective(CGameTask* parent, int idx);
+    SGameTaskObjective(CGameTask* parent, TASK_OBJECTIVE_ID idx);
 
     CGameTask* GetParent() const { return m_parent; }
 
@@ -120,7 +119,7 @@ public:
     auto GetType_script() const { return m_task_type; }
     void SetType_script(int t)  { m_task_type = (ETaskType)t; }
 
-    auto GetIDX_script() const { return m_idx; }
+    auto GetID() const { return m_idx; }
 
     auto GetTitle_script() const { return m_Title.c_str(); }
     void SetTitle_script(pcstr title) { m_Title = title; }
@@ -159,14 +158,16 @@ public:
 
 using OBJECTIVES_VECTOR = xr_vector<SGameTaskObjective>;
 
-class CGameTask : public SGameTaskObjective, public Noncopyable
+class CGameTask final : public SGameTaskObjective, public Noncopyable
 {
 public:
     TASK_ID m_ID;
-    TASK_OBJECTIVE_ID m_active_objective{ NO_TASK_OBJECTIVE };
     u32 m_priority{};
     bool m_read{};
+
+private:
     OBJECTIVES_VECTOR m_Objectives;
+    TASK_OBJECTIVE_ID m_active_objective{ NO_TASK_OBJECTIVE };
 
 public:
     CGameTask();
@@ -178,12 +179,22 @@ public:
 
     void ChangeStateCallback() override;
 
-    SGameTaskObjective& ActiveObjective();
-    SGameTaskObjective& Objective(size_t idx) { return m_Objectives[idx]; }
+    SGameTaskObjective* ActiveObjective();
+    SGameTaskObjective& Objective(TASK_OBJECTIVE_ID idx);
+    const SGameTaskObjective& Objective(TASK_OBJECTIVE_ID idx) const;
+    ETaskState ObjectiveState(TASK_OBJECTIVE_ID idx) const;
+    void SetActiveObjective(TASK_OBJECTIVE_ID idx);
+    TASK_OBJECTIVE_ID GetObjectivesCount() const;
+
+    using SGameTaskObjective::SetTaskState;
+    void SetTaskState(ETaskState state, TASK_OBJECTIVE_ID objective_id);
+    bool HasObjectiveInProgress() const;
 
     // map
     void OnArrived();
     CMapLocation* LinkedMapLocation() override;
+
+    void FillEncyclopedia() const;
 
     // for scripting access
     void Load_script(pcstr id) { Load(id); }
@@ -195,9 +206,5 @@ public:
     void SetPriority_script(int prio) { m_priority = prio; }
 
     void AddObjective_script(SGameTaskObjective* O);
-
-    SGameTaskObjective* GetObjective_script(int objective_id) { return &Objective(objective_id); }
-
-	auto GetObjectiveSize_script() const { return m_Objectives.size(); }
-
+    SGameTaskObjective* GetObjective_script(TASK_OBJECTIVE_ID objective_id);
 };

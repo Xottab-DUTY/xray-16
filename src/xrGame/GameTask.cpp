@@ -13,6 +13,7 @@
 #include "script_game_object.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
+#include "alife_registry_wrappers.h"
 #include "alife_simulator.h"
 #include "alife_story_registry.h"
 #include "game_object_space.h"
@@ -24,13 +25,13 @@ CUIXml* g_gameTaskXml = nullptr;
 ALife::_STORY_ID story_id(cpcstr story_id)
 {
     using namespace luabind;
-	const int res = object_cast<int>(
-		object(
-			globals(GEnv.ScriptEngine->lua())
-				["story_ids"]
-		)
-		[story_id]
-	);
+    const int res = object_cast<int>(
+        object(
+            globals(GEnv.ScriptEngine->lua())
+                ["story_ids"]
+        )
+        [story_id]
+    );
     return ALife::_STORY_ID(res);
 }
 
@@ -53,18 +54,14 @@ u16 storyId2GameId(ALife::_STORY_ID id)
     return u16(-1);
 }
 
-SGameTaskObjective::SGameTaskObjective()
-    : m_task_state(eTaskStateDummy),
-      m_task_type(eTaskTypeDummy) {}
-
-SGameTaskObjective::SGameTaskObjective(CGameTask* parent, int idx)
+SGameTaskObjective::SGameTaskObjective(CGameTask* parent, TASK_OBJECTIVE_ID idx)
     : m_parent(parent),
       m_task_state(eTaskStateDummy),
       m_task_type(eTaskTypeDummy),
       m_idx(idx) {}
 
 CGameTask::CGameTask()
-    : SGameTaskObjective(this, 0) {}
+    : SGameTaskObjective(this, ROOT_TASK_OBJECTIVE) {}
 
 void CGameTask::Load(const TASK_ID& id)
 {
@@ -102,7 +99,9 @@ void CGameTask::Load(const TASK_ID& id)
         const XML_NODE l_root = g_gameTaskXml->NavigateToNode("objective", i);
         g_gameTaskXml->SetLocalRoot(l_root);
 
-        SGameTaskObjective& objective = m_Objectives.emplace_back(this, i);
+        SGameTaskObjective& objective = (i == ROOT_TASK_OBJECTIVE)
+                                        ? *this
+                                        : m_Objectives.emplace_back(this, i);
 
         //.
         pcstr tag_text = g_gameTaskXml->Read(l_root, "text", 0, nullptr);
@@ -119,7 +118,7 @@ void CGameTask::Load(const TASK_ID& id)
             objective.m_article_key = tag_text;
 
         //.
-        if (i == 0)
+        if (i == ROOT_TASK_OBJECTIVE)
         {
             objective.m_icon_texture_name = g_gameTaskXml->Read(g_gameTaskXml->GetLocalRoot(), "icon", 0, nullptr);
             if (objective.m_icon_texture_name.size() &&
@@ -257,20 +256,6 @@ void CGameTask::Load(const TASK_ID& id)
     g_gameTaskXml->SetLocalRoot(g_gameTaskXml->GetRoot());
 }
 
-void CGameTask::AddObjective_script(SGameTaskObjective* O)
-{
-    O->CommitScriptHelperContents();
-    m_Objectives.emplace_back(*O);
-}
-
-SGameTaskObjective& CGameTask::ActiveObjective()
-{
-    if (m_active_objective == NO_TASK_OBJECTIVE)
-        return *this;
-
-    return Objective(m_active_objective);
-}
-
 void SGameTaskObjective::SetTaskState(ETaskState state)
 {
     m_task_state = state;
@@ -293,12 +278,102 @@ void SGameTaskObjective::SetTaskState(ETaskState state)
     ChangeStateCallback();
 }
 
+SGameTaskObjective* CGameTask::ActiveObjective()
+{
+    if (m_active_objective == NO_TASK_OBJECTIVE)
+        return nullptr;
+
+    return &Objective(m_active_objective);
+}
+
+SGameTaskObjective& CGameTask::Objective(TASK_OBJECTIVE_ID idx)
+{
+    if (idx == ROOT_TASK_OBJECTIVE)
+        return *this;
+    return m_Objectives[idx - 1];
+}
+
+const SGameTaskObjective& CGameTask::Objective(TASK_OBJECTIVE_ID idx) const
+{
+    if (idx == ROOT_TASK_OBJECTIVE)
+        return *this;
+    return m_Objectives[idx - 1];
+}
+
+ETaskState CGameTask::ObjectiveState(TASK_OBJECTIVE_ID idx) const
+{
+    if (idx == NO_TASK_OBJECTIVE)
+        return GetTaskState();
+    return Objective(idx).GetTaskState();
+}
+
+void CGameTask::SetActiveObjective(TASK_OBJECTIVE_ID idx)
+{
+    VERIFY2(objective_id != 0, "Objective ID should not be 0.");
+    m_active_objective = idx;
+}
+
+TASK_OBJECTIVE_ID CGameTask::GetObjectivesCount() const
+{
+    return m_Objectives.size() + 1; // plus task itself
+}
+
+void CGameTask::SetTaskState(ETaskState state, TASK_OBJECTIVE_ID objective_id)
+{
+    if (objective_id == NO_TASK_OBJECTIVE)
+    {
+        SetTaskState(state);
+        return;
+    }
+    if (objective_id != ROOT_TASK_OBJECTIVE)
+    {
+        Objective(objective_id).SetTaskState(state);
+        return;
+    }
+    // Set state for task and all sub-tasks
+    if (GetTaskState() == eTaskStateInProgress)
+        SetTaskState(state);
+    for (SGameTaskObjective& objective : m_Objectives)
+    {
+        if (objective.GetTaskState() == eTaskStateInProgress)
+            objective.SetTaskState(state);
+    }
+}
+
+bool CGameTask::HasObjectiveInProgress() const
+{
+    for (const SGameTaskObjective& objective : m_Objectives)
+    {
+        if (objective.GetTaskState() == eTaskStateInProgress)
+            return true;
+    }
+    return false;
+}
+
 void CGameTask::OnArrived()
 {
     m_task_state = eTaskStateInProgress;
     m_read = false;
 
+    FillEncyclopedia();
     CreateMapLocation(false);
+}
+
+void CGameTask::FillEncyclopedia() const
+{
+    ARTICLE_VECTOR& article_vector = Actor()->encyclopedia_registry->registry().objects();
+    for (const SGameTaskObjective& obj : m_Objectives)
+    {
+        if (!obj.m_article_id.size())
+            continue;
+
+        if (article_vector.end() != std::find_if(article_vector.begin(), article_vector.end(), FindArticleByIDPred(obj.m_article_id)))
+            continue;
+
+        CEncyclopediaArticle article;
+        article.Load(obj.m_article_id);
+        article_vector.emplace_back(obj.m_article_id, Level().GetGameTime(), article.data()->articleType);
+    }
 }
 
 CMapLocation* CGameTask::LinkedMapLocation()
