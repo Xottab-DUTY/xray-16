@@ -61,6 +61,7 @@ SCRIPT_EXPORT(CGameTask, (),
             .def("set_map_hint", &SGameTaskObjective::SetMapHint_script)
             .def("set_map_location", &SGameTaskObjective::SetMapLocation_script)
             .def("set_map_object_id", &SGameTaskObjective::SetMapObjectID_script)
+            .def("set_object_id",     &SGameTaskObjective::SetMapObjectID_script) // Shadow of Chernobyl scripts
             .def_readwrite("def_ml_enabled", &CGameTask::m_def_location_enabled)
 
             .def("remove_map_locations", &SGameTaskObjective::RemoveMapLocations)

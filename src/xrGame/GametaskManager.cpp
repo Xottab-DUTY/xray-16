@@ -95,7 +95,9 @@ CGameTask* CGameTaskManager::GiveGameTaskToActor(const TASK_ID& id,
 {
     if (bCheckExisting && HasGameTask(id, false))
         return nullptr;
-    CGameTask* t = xr_new<CGameTask>(id);
+    //CGameTask* t = xr_new<CGameTask>(id);
+    CGameTask* t = xr_new<CGameTask>();
+    t->Load(id);
 
     return GiveGameTaskToActor(t, timeToComplete, bCheckExisting, timer_ttl);
 }

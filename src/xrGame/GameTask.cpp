@@ -460,6 +460,11 @@ void SGameTaskObjective::ChangeStateCallback()
 
 void CGameTask::ChangeStateCallback()
 {
+    if (!m_Objectives.empty())
+    {
+        SGameTaskObjective::ChangeStateCallback();
+        return;
+    }
     Actor()->callback(GameObject::eTaskStateChange)(this, GetTaskState());
 }
 
