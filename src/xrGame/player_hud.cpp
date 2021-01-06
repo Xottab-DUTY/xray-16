@@ -442,7 +442,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
     const u32 ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed, m_model->dcast_PKinematicsAnimated());
 
-    if (m_model->dcast_PKinematicsAnimated())
+    if (m_model->dcast_PKinematicsAnimated() && !monolithic)
     {
         IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated();
 
