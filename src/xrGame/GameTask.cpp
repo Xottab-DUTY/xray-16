@@ -278,6 +278,11 @@ void SGameTaskObjective::SetTaskState(ETaskState state)
     ChangeStateCallback();
 }
 
+TASK_OBJECTIVE_ID CGameTask::ActiveObjectiveIdx() const
+{
+    return m_active_objective;
+}
+
 SGameTaskObjective* CGameTask::ActiveObjective()
 {
     if (m_active_objective == NO_TASK_OBJECTIVE)

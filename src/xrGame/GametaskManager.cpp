@@ -292,7 +292,7 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, ETaskType type)
     m_read = true;
 }*/
 
-void CGameTaskManager::SetActiveTask(CGameTask* task, TASK_OBJECTIVE_ID objective_id /*= NO_TASK_OBJECTIVE*/)
+void CGameTaskManager::SetActiveTask(CGameTask* task, TASK_OBJECTIVE_ID objective_id)
 {
     VERIFY(task);
     if (task)
@@ -307,6 +307,14 @@ void CGameTaskManager::SetActiveTask(CGameTask* task, TASK_OBJECTIVE_ID objectiv
         m_flags.set(eChanged, TRUE);
         task->m_read = true;
     }
+}
+
+void CGameTaskManager::SetActiveTask(CGameTask* task)
+{
+    auto objective = task->ActiveObjectiveIdx();
+    if (objective == NO_TASK_OBJECTIVE && task->GetObjectivesCount() > 1)
+        objective = 1;
+    SetActiveTask(task, objective);
 }
 
 CUIMapWnd* GetMapWnd();

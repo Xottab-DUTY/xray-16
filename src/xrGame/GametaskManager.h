@@ -46,7 +46,8 @@ public:
 
     CGameTask* ActiveTask(ETaskType type = eTaskTypeStoryline);
     //void SetActiveTask(const TASK_ID& id, ETaskType type = eTaskTypeStoryline);
-    void SetActiveTask(CGameTask* task, TASK_OBJECTIVE_ID objective_id = NO_TASK_OBJECTIVE);
+    void SetActiveTask(CGameTask* task);
+    void SetActiveTask(CGameTask* task, TASK_OBJECTIVE_ID objective_id);
     u32 ActualFrame() const { return m_actual_frame; }
     CGameTask* IterateGet(CGameTask* t, ETaskState state, ETaskType type, bool bForward);
     u32 GetTaskIndex(CGameTask* t, ETaskState state, ETaskType type = eTaskTypeStoryline);

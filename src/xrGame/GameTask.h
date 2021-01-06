@@ -179,6 +179,7 @@ public:
 
     void ChangeStateCallback() override;
 
+    TASK_OBJECTIVE_ID ActiveObjectiveIdx() const;
     SGameTaskObjective* ActiveObjective();
     SGameTaskObjective& Objective(TASK_OBJECTIVE_ID idx);
     const SGameTaskObjective& Objective(TASK_OBJECTIVE_ID idx) const;
