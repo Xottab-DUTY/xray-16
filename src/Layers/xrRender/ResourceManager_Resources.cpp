@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#ifndef USE_OGL // XXX: support OpenGL
+#   include <FlexibleVertexFormat.h>
+#endif
+
 void fix_texture_name(pstr fn);
 
 void simplify_texture(string_path& fn)
@@ -179,6 +183,17 @@ void	CResourceManager::_DeleteRTC(const CRTC* RT)
     Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
 */
+
+#ifndef USE_OGL // XXX: support OpenGL
+SGeometry* CResourceManager::CreateGeom(u32 FVF, VertexBufferHandle vb, IndexBufferHandle ib)
+{
+    std::vector<VertexElement> decl; // XXX: warning, std::vector used instead of xr_vector
+    [[maybe_unused]] const bool result = FVF::CreateDeclFromFVF(FVF, decl);
+    VERIFY(result);
+    SGeometry* g = CreateGeom(decl.data(), vb, ib);
+    return g;
+}
+#endif
 
 void CResourceManager::DeleteGeom(const SGeometry* Geom)
 {

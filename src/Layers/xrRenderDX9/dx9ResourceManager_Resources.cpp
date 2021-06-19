@@ -132,13 +132,6 @@ SGeometry* CResourceManager::CreateGeom(VertexElement* decl, VertexBufferHandle 
 
     return Geom;
 }
-SGeometry* CResourceManager::CreateGeom(u32 FVF, VertexBufferHandle vb, IndexBufferHandle ib)
-{
-    VertexElement dcl[MAX_FVF_DECL_SIZE];
-    CHK_DX(D3DXDeclaratorFromFVF(FVF, dcl));
-    SGeometry* g = CreateGeom(dcl, vb, ib);
-    return g;
-}
 
 #ifdef _EDITOR
 //--------------------------------------------------------------------------------------------------------------

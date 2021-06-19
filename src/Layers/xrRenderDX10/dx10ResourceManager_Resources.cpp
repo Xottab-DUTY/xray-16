@@ -183,7 +183,7 @@ SDeclaration* CResourceManager::_CreateDecl(D3DVERTEXELEMENT9* dcl)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
+SGeometry* CResourceManager::CreateGeom(VertexElement* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
     R_ASSERT(decl && vb);
 
@@ -206,14 +206,6 @@ SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, ID3DVertexBuffe
     Geom->ib = ib;
 
     return Geom;
-}
-
-SGeometry* CResourceManager::CreateGeom(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
-{
-    D3DVERTEXELEMENT9 dcl[MAX_FVF_DECL_SIZE];
-    CHK_DX(D3DXDeclaratorFromFVF(FVF, dcl));
-    SGeometry* g = CreateGeom(dcl, vb, ib);
-    return g;
 }
 
 //--------------------------------------------------------------------------------------------------------------
