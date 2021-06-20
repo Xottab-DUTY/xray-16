@@ -95,7 +95,7 @@ public:
 
 #endif
 
-#ifndef NO_XR_VDECLARATOR
+#if 0//ndef NO_XR_VDECLARATOR
 struct VDeclarator : public svector<D3DVERTEXELEMENT9, MAXD3DDECLLENGTH + 1>
 {
     void set(u32 FVF)

@@ -15,9 +15,9 @@
 #endif
 #include <d3dx9.h>
 
-#include <D3D11.h>
-#include <D3Dx11core.h>
-#include <D3DCompiler.h>
+#include <d3d9.h>
+#include <d3d11.h>
+#include <d3dcompiler.h>
 
 #if __has_include(<dxgi1_4.h>)
 #include <dxgi1_4.h>

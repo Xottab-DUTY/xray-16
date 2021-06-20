@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include <D3DX10Tex.h>
+#include <DirectXTex.h>
 
 static void generate_jitter(u32* dest, u32 elem_count)
 {
@@ -282,16 +282,20 @@ void CRenderTarget::build_textures()
         //	Create noise mipped
         {
             //	Autogen mipmaps
-            desc.MipLevels = 0;
-            R_CHK(HW.pDevice->CreateTexture2D(&desc, 0, &t_noise_surf_mipped));
+            DirectX::Image img;
+            img.format = desc.Format;
+            img.height = TEX_jitter;
+            img.pixels = (uint8_t*)tempData[0];
+            img.rowPitch = TEX_jitter * sampleSize;
+            img.slicePitch = 0;
+            img.width = TEX_jitter;
+
+            DirectX::ScratchImage mippedNoise;
+            DirectX::GenerateMipMaps(img, DirectX::TEX_FILTER_POINT, 0, mippedNoise);
+
+            R_CHK(DirectX::CreateTexture(HW.pDevice, mippedNoise.GetImages(), mippedNoise.GetImageCount(), mippedNoise.GetMetadata(), (ID3D11Resource**)&t_noise_surf_mipped));
             t_noise_mipped = RImplementation.Resources->_CreateTexture(r2_jitter_mipped);
             t_noise_mipped->surface_set(t_noise_surf_mipped);
-
-            //	Update texture. Generate mips.
-
-            HW.pContext->CopySubresourceRegion(t_noise_surf_mipped, 0, 0, 0, 0, t_noise_surf[0], 0, 0);
-
-            D3DX11FilterTexture(HW.pContext, t_noise_surf_mipped, 0, D3DX10_FILTER_POINT);
         }
     }
 }

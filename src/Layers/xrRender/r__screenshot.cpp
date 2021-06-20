@@ -10,7 +10,7 @@
 #endif
 
 #if !defined(USE_DX9) && !defined(USE_OGL)
-#include "d3dx11tex.h"
+#include "DirectXTex.h"
 #endif
 
 using namespace XRay::Media;
@@ -175,12 +175,12 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         CHK_DX(HW.pDevice->CreateTexture2D(&desc, NULL, &pSrcSmallTexture));
 
         //D3DX10_TEXTURE_LOAD_INFO* pLoadInfo
-        CHK_DX(D3DX11LoadTextureFromTexture(HW.pContext, pSrcTexture, NULL, pSrcSmallTexture));
+        //CHK_DX(D3DX11LoadTextureFromTexture(HW.pContext, pSrcTexture, NULL, pSrcSmallTexture));
 
         // save (logical & physical)
         ID3DBlob* saved = nullptr;
-        HRESULT hr = D3DX11SaveTextureToMemory(HW.pContext, pSrcSmallTexture, D3DX11_IFF_DDS, &saved, 0);
-        if (hr == D3D_OK)
+        //HRESULT hr = D3DX11SaveTextureToMemory(HW.pContext, pSrcSmallTexture, D3DX11_IFF_DDS, &saved, 0);
+        //if (hr == D3D_OK)
         {
             IWriter* fs = FS.w_open(name);
             if (fs)
@@ -212,12 +212,12 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         CHK_DX(HW.pDevice->CreateTexture2D(&desc, NULL, &pSrcSmallTexture));
 
         //D3DX10_TEXTURE_LOAD_INFO* pLoadInfo
-        CHK_DX(D3DX11LoadTextureFromTexture(HW.pContext, pSrcTexture, NULL, pSrcSmallTexture));
+        //CHK_DX(D3DX11LoadTextureFromTexture(HW.pContext, pSrcTexture, NULL, pSrcSmallTexture));
 
         // save (logical & physical)
         ID3DBlob* saved = nullptr;
-        HRESULT hr = D3DX11SaveTextureToMemory(HW.pContext, pSrcSmallTexture, D3DX11_IFF_DDS, &saved, 0);
-        if (hr == D3D_OK)
+        //HRESULT hr = D3DX11SaveTextureToMemory(HW.pContext, pSrcSmallTexture, D3DX11_IFF_DDS, &saved, 0);
+        //if (hr == D3D_OK)
         {
             if (!memory_writer)
             {
@@ -247,7 +247,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
                    g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu");
 
         ID3DBlob* saved = nullptr;
-        CHK_DX(D3DX11SaveTextureToMemory(HW.pContext, pSrcTexture, D3DX11_IFF_JPG, &saved, 0));
+        //CHK_DX(D3DX11SaveTextureToMemory(HW.pContext, pSrcTexture, D3DX11_IFF_JPG, &saved, 0));
 
         IWriter* fs = FS.w_open("$screenshots$", buf);
         R_ASSERT(fs);
@@ -261,7 +261,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
                        g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu");
 
             ID3DBlob* saved2 = nullptr;
-            CHK_DX(D3DX11SaveTextureToMemory(HW.pContext, pSrcTexture, D3DX11_IFF_BMP, &saved2, 0));
+            //CHK_DX(D3DX11SaveTextureToMemory(HW.pContext, pSrcTexture, D3DX11_IFF_BMP, &saved2, 0));
 
             IWriter* fs2 = FS.w_open("$screenshots$", buf);
             R_ASSERT(fs2);
