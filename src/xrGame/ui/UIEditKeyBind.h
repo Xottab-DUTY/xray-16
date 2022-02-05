@@ -43,8 +43,11 @@ public:
 
 protected:
     void BindAction2Key();
+    void OnActionBind();
 
     bool m_isEditMode;
-
+    bool m_double_click;
+    bool m_wait_double_click;
+    u32  m_press_time;
     //.	CUIColorAnimatorWrapper*				m_pAnimation;
 };

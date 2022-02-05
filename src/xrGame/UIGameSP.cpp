@@ -124,7 +124,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
     if (!pActor->g_Alive())
         return false;
 
-    switch (GetBindedAction(dik))
+    switch (GetBindedAction(dik, true, true))
     {
     case kACTIVE_JOBS:
     {

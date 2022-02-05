@@ -63,7 +63,7 @@ void CUISequenceItem::Load(CUIXml* xml, int idx)
 bool CUISequenceItem::AllowKey(int dik)
 {
     xr_vector<int>::iterator it =
-        std::find(m_disabled_actions.begin(), m_disabled_actions.end(), GetBindedAction(dik));
+        std::find(m_disabled_actions.begin(), m_disabled_actions.end(), GetBindedAction(dik, true, true));
     if (it == m_disabled_actions.end())
         return true;
     else

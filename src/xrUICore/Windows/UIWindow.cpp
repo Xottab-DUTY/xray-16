@@ -205,9 +205,6 @@ void CUIWindow::GetAbsoluteRect(Frect& r)
 //реакция на мышь
 //координаты курсора всегда, кроме начального вызова
 //задаются относительно текущего окна
-
-#define DOUBLE_CLICK_TIME 250
-
 bool CUIWindow::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
     cursor_pos.x = x;

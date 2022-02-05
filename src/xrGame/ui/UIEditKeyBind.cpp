@@ -83,18 +83,21 @@ bool CUIEditKeyBind::OnMouseDown(int mouse_btn)
     {
         string64 message;
 
+        keyboard_key* prev_key = m_keyboard;
+
         m_keyboard = DikToPtr(mouse_btn, true);
         if (!m_keyboard)
             return true;
 
-        SetValue();
-        OnFocusLost();
+        if (prev_key != m_keyboard || Device.dwTimeContinual - m_press_time >= DOUBLE_CLICK_TIME)
+        {
+            m_press_time = Device.dwTimeContinual;
+            m_wait_double_click = true;
+            return false;
+        }
+        m_double_click = true;
 
-        xr_strcpy(message, m_action->action_name);
-        xr_strcat(message, "=");
-        xr_strcat(message, m_keyboard->key_name);
-        SendMessage2Group("key_binding", message);
-
+        OnActionBind();
         return true;
     }
 
@@ -121,17 +124,21 @@ bool CUIEditKeyBind::OnKeyboardAction(int dik, EUIMessages keyboard_action)
         if (m_isGamepadBinds != is_gamepad_key)
             return true;
 
+        keyboard_key* prev_key = m_keyboard;
+
         m_keyboard = DikToPtr(dik, true);
         if (!m_keyboard)
             return true;
 
-        SetValue();
+        if (prev_key != m_keyboard || Device.dwTimeContinual - m_press_time >= DOUBLE_CLICK_TIME)
+        {
+            m_press_time = Device.dwTimeContinual;
+            m_wait_double_click = true;
+            return false;
+        }
+        m_double_click = true;
 
-        xr_strcpy(message, m_action->action_name);
-        xr_strcat(message, "=");
-        xr_strcat(message, m_keyboard->key_name);
-        OnFocusLost();
-        SendMessage2Group("key_binding", message);
+        OnActionBind();
         return true;
     }
     return false;
@@ -148,18 +155,22 @@ bool CUIEditKeyBind::OnControllerAction(int axis, float x, float y, EUIMessages 
         if (!m_isGamepadBinds)
             return true;
 
+        keyboard_key* prev_key = m_keyboard;
+
         m_keyboard = DikToPtr(axis, true);
         if (!m_keyboard)
             return true;
 
-        SetValue();
+        if (prev_key != m_keyboard || Device.dwTimeContinual - m_press_time >= DOUBLE_CLICK_TIME)
+        {
+            m_press_time = Device.dwTimeContinual;
+            m_wait_double_click = true;
+            return false;
+        }
 
-        string64 message;
-        xr_strcpy(message, m_action->action_name);
-        xr_strcat(message, "=");
-        xr_strcat(message, m_keyboard->key_name);
-        OnFocusLost();
-        SendMessage2Group("key_binding", message);
+        m_double_click = true;
+
+        OnActionBind();
         return true;
     }
 
@@ -169,6 +180,15 @@ bool CUIEditKeyBind::OnControllerAction(int axis, float x, float y, EUIMessages 
 void CUIEditKeyBind::Update()
 { 
     CUIStatic::Update();
+
+    if (m_wait_double_click)
+    {
+        if (Device.dwTimeContinual - m_press_time >= DOUBLE_CLICK_TIME)
+        {
+            m_double_click = false;
+            OnActionBind();
+        }
+    }
 }
 
 void CUIEditKeyBind::SetEditMode(bool b)
@@ -196,7 +216,11 @@ void CUIEditKeyBind::AssignProps(const shared_str& entry, const shared_str& grou
 void CUIEditKeyBind::SetValue()
 {
     if (m_keyboard)
-        SetText(m_keyboard->key_local_name.c_str());
+    {
+        string64 text;
+        strconcat(text, m_keyboard->key_local_name.c_str(), m_double_click ? " (x2)" : "");
+        SetText(text);
+    }
     else
         SetText(NULL);
 }
@@ -237,6 +261,19 @@ bool CUIEditKeyBind::IsChangedOptValue() const
     return m_keyboard != m_opt_backup_value;
 }
 
+void CUIEditKeyBind::OnActionBind()
+{
+    m_wait_double_click = false;
+    m_press_time = 0;
+
+    SetValue();
+    OnFocusLost();
+
+    string64 message;
+    strconcat(message, m_action->action_name, "=", m_keyboard->key_name, "=", m_double_click ? "true" : "false");
+    SendMessage2Group("key_binding", message);
+}
+
 void CUIEditKeyBind::BindAction2Key()
 {
     if (m_keyboard)
@@ -245,27 +282,40 @@ void CUIEditKeyBind::BindAction2Key()
         comm_bind += m_action->action_name;
         comm_bind += " ";
         comm_bind += m_keyboard->key_name;
+        if (m_double_click)
+            comm_bind += "double";
         Console->Execute(comm_bind.c_str());
     }
 }
 
 void CUIEditKeyBind::OnMessage(LPCSTR message)
 {
-    // message = "command=key"
-    int eq = (int)strcspn(message, "=");
+    // message = "command=key=double click"
+    string64 command{};
+    string64 key{};
+    string64 double_click_str{};
+    sscanf(message, "%s=%s=%s", command, key, double_click_str);
 
     if (!m_keyboard)
         return;
 
-    if (0 != xr_strcmp(m_keyboard->key_name, message + eq + 1))
+    if (0 != xr_strcmp(m_keyboard->key_name, key))
         return;
-
-    string64 command;
-    xr_strcpy(command, message);
-    command[eq] = 0;
 
     if (0 == xr_strcmp(m_action->action_name, command))
         return; // fuck
+
+    key_binding& binding = g_key_bindings[m_action->id];
+
+    for (u8 i = 0; i < bindtypes_count; ++i)
+    {
+        if (binding.m_keyboard[i] == m_keyboard)
+        {
+            const bool double_click = xr_stricmp(double_click_str, "true") == 0;
+            if (binding.m_double_click[i] != double_click)
+                return;
+        }
+    }
 
     game_action* other_action = ActionNameToPtr(command);
     if (IsGroupNotConflicted(m_action->key_group, other_action->key_group))

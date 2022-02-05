@@ -4,6 +4,8 @@
 #include "xrCommon/xr_map.h"
 #include "xrEngine/xr_input.h" // Don't remove this include
 
+constexpr u32 DOUBLE_CLICK_TIME = 250; // ms
+
 enum EGameActions : u32
 {
     kLOOK_AROUND, // gamepad
@@ -167,6 +169,9 @@ struct key_binding
 {
     game_action* m_action;
     keyboard_key* m_keyboard[bindtypes_count];
+    u32 m_last_press_time[bindtypes_count]{}; // to handle double click
+    u32 m_last_release_time[bindtypes_count]{}; // to handle double click
+    bool m_double_click[bindtypes_count]{};
 };
 
 extern ENGINE_API EKeyGroup g_current_keygroup;
@@ -189,7 +194,9 @@ ENGINE_API keyboard_key* DikToPtr(int dik, bool safe);
 
 ENGINE_API bool IsBinded(EGameActions action_id, int dik);
 ENGINE_API int GetActionDik(EGameActions action_id, int idx = -1);
-ENGINE_API EGameActions GetBindedAction(int dik);
+
+ENGINE_API EGameActions GetBindedAction(int dik, bool doubleClickSupport, bool press);
+ICF        EGameActions GetBindedAction(int dik) { return GetBindedAction(dik, false, true); }
 
 ENGINE_API pcstr GetActionBinding(EGameActions action);
 

@@ -124,7 +124,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 
     bool b_ui_exist = !!CurrentGameUI();
 
-    EGameActions _curr = GetBindedAction(key);
+    EGameActions _curr = GetBindedAction(key, true, true);
 
     /* avo: script callback */
     if (!g_bDisableAllInput && g_actor)
@@ -211,7 +211,7 @@ void CLevel::IR_OnKeyboardPress(int key)
             return;
     }
 
-    if (game && game->OnKeyboardPress(GetBindedAction(key)))
+    if (game && game->OnKeyboardPress(GetBindedAction(key, true, true)))
         return;
 
     if (_curr == kQUICK_SAVE && IsGameTypeSingle())
@@ -419,7 +419,7 @@ void CLevel::IR_OnKeyboardPress(int key)
     {
         IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
         if (IR)
-            IR->IR_OnKeyboardPress(GetBindedAction(key));
+            IR->IR_OnKeyboardPress(GetBindedAction(key, true, true));
     }
 
 #ifdef _DEBUG
@@ -446,7 +446,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
     if (CurrentGameUI() && CurrentGameUI()->IR_UIOnKeyboardRelease(key))
         return;
-    if (game && game->OnKeyboardRelease(GetBindedAction(key)))
+    if (game && game->OnKeyboardRelease(GetBindedAction(key, true, false)))
         return;
 
 #ifndef MASTER_GOLD
@@ -461,7 +461,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
     {
         IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
         if (IR)
-            IR->IR_OnKeyboardRelease(GetBindedAction(key));
+            IR->IR_OnKeyboardRelease(GetBindedAction(key, true, false));
     }
 }
 
@@ -572,7 +572,7 @@ void CLevel::IR_OnControllerPress(int key, float x, float y)
     {
         IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
         if (IR)
-            IR->IR_OnControllerPress(GetBindedAction(key), x, y);
+            IR->IR_OnControllerPress(GetBindedAction(key, true, true), x, y);
     }
 
 }
@@ -609,7 +609,7 @@ void CLevel::IR_OnControllerRelease(int key, float x, float y)
     {
         IInputReceiver* IR = smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
         if (IR)
-            IR->IR_OnControllerRelease(GetBindedAction(key), x, y);
+            IR->IR_OnControllerRelease(GetBindedAction(key, true, false), x, y);
     }
 }
 

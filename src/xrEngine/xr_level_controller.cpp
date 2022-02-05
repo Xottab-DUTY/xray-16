@@ -688,7 +688,7 @@ bool IsGroupMatching(EKeyGroup g1, EKeyGroup g2)
     return ((g1 == g2) || (g1 == _both) || (g2 == _both));
 }
 
-EGameActions GetBindedAction(int dik)
+EGameActions GetBindedAction(int dik, bool doubleClickSupport, bool press)
 {
     for (int idx = 0; idx < bindings_count; ++idx)
     {
@@ -700,8 +700,23 @@ EGameActions GetBindedAction(int dik)
             continue;
 
         for (u8 i = 0; i < bindtypes_count && isGroupMatching; ++i)
+        {
             if (binding->m_keyboard[i] && binding->m_keyboard[i]->dik == dik)
-                return binding->m_action->id;
+            {
+                if (!binding->m_double_click[i])
+                    return binding->m_action->id;
+
+                if (!doubleClickSupport)
+                    continue;
+
+                auto& lastFetchTime = doubleClickSupport ? binding->m_last_press_time[i] : binding->m_last_release_time[i];
+                if (Device.dwTimeContinual - lastFetchTime < DOUBLE_CLICK_TIME)
+                    return binding->m_action->id;
+
+                lastFetchTime = Device.dwTimeContinual;
+                // continue the loop, not a mistake
+            }
+        }
     }
     return kNOTBINDED;
 }
@@ -756,14 +771,12 @@ public:
     {
         string256 action;
         string256 key;
+        string256 double_click;
         *action = 0;
         *key = 0;
+        *double_click = 0;
 
-        sscanf(args, "%s %s", action, key);
-        if (!*action)
-            return;
-
-        if (!*key)
+        if (sscanf(args, "%s %s %s", action, key, double_click) < 2)
             return;
 
         if (!g_remapped)
@@ -787,6 +800,9 @@ public:
         key_binding* currBinding = &g_key_bindings[actionId];
 
         currBinding->m_keyboard[m_workIdx] = keyboard;
+        currBinding->m_double_click[m_workIdx] = xr_stricmp(double_click, "double") == 0;
+        currBinding->m_last_press_time[m_workIdx] = 0;
+        currBinding->m_last_release_time[m_workIdx] = 0;
 
         for (int idx = 0; idx < bindings_count; ++idx)
         {
